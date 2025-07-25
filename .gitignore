@@ -1,0 +1,50 @@
+# ======================
+# 👩‍💻 ASP.NET Core (.NET)
+# ======================
+bin/
+obj/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+*.dbmdl
+*.pdb
+*.log
+*.lock.json
+*.ideconfig
+Generated_Code/
+
+# Local .NET Secrets
+secrets.json
+.env
+
+# Entity Framework
+Migrations/
+*.sqlite
+
+# Ignore Visual Studio solution files during early development
+*.sln
+
+# ======================
+# 🧑‍🎨 React (Vite / Node)
+# ======================
+node_modules/
+dist/
+.env.local
+.env.development
+.env.test
+.env.production
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ======================
+# 📦 Docker & Misc
+# ======================
+*.tar
+*.gz
+*.zip
+docker-compose.override.yml
+.DS_Store
+Thumbs.db
