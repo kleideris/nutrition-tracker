@@ -1,6 +1,6 @@
 ﻿namespace NutritionTracker.Api.Data
 {
-    public class FoodItem
+    public class FoodItem : BaseEntity
     {
         // Primary key used to uniquely identify each food item in the database.
         public int Id { get; set; }

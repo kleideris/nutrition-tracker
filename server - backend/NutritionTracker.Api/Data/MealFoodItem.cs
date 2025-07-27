@@ -1,6 +1,6 @@
 ﻿namespace NutritionTracker.Api.Data
 {
-    public class MealFoodItem
+    public class MealFoodItem :BaseEntity
     {
         // Primary key that uniquely identifies the relationship between a specific meal and its food item.
         public int Id { get; set; }
