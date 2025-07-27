@@ -7,6 +7,7 @@ namespace NutritionTracker.Api.Data
         // Primary key used to uniquely identify each meal record.
         public int Id { get; set; }
 
+        // Foreign key linking this meal to a specific user.
         public int UserId { get; set; }
 
         // Optional name given by users to personalize meals (e.g., "My Salad").
