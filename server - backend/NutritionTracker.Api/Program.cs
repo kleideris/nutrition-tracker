@@ -12,7 +12,7 @@ namespace NutritionTracker.Api
             // Add services to the container.
             //-------------------------------------------
             // adds db connection string from env variables
-            builder.Services.AddDbContext<NutritionTrackerDBContext>(
+            builder.Services.AddDbContext<AppDBContext>(
                 options => options.UseSqlServer(
                     builder
                     .Configuration
