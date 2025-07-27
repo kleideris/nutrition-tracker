@@ -6,6 +6,5 @@
         Breakfast,
         Lunch,
         Dinner
-
     }
 }
