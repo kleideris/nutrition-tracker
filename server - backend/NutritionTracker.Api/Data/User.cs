@@ -19,6 +19,9 @@ namespace NutritionTracker.Api.Data
         // Specifies the user's role within the system (e.g., RegularUser, Admin).
         public UserRole UserRole { get; set; }
 
+        // Navigation property linking to the user's detailed profile, which stores biometric, lifestyle, or personalization data.
+        public virtual UserProfile? UserProfile { get; set; }
+
         // Collection of meals associated with the user, representing their dietary log and daily intake history.
         public ICollection<Meal> Meals { get; set; } = [];
 
