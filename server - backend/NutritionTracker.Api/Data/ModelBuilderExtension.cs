@@ -19,7 +19,7 @@ namespace NutritionTracker.Api.Data
                     .HasDefaultValueSql("GETDATE()");
 
                 // Automatically sets the update timestamp on insert and every subsequent update using the database's current date/time.
-                builder.Property("ModifiedAt")
+                builder.Property("UpdatedAt")
                     .ValueGeneratedOnAddOrUpdate()
                     .HasDefaultValueSql("GETDATE()");
             }
