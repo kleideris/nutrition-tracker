@@ -10,20 +10,14 @@ namespace NutritionTracker.Api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            //-------------------------------------------
-            // adds db connection string from env variables
-            builder.Services.AddDbContext<AppDBContext>(
-                options => options.UseSqlServer(
-                    builder
-                    .Configuration
-                    .GetConnectionString("DefaultConnection")
-                )
 
-            );
-            //-------------------------------------------
+            //Configuration to set up Entity Framework Core with SQL Server using a connection string
+            var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connString));
+
+            // TODO: configure a way to add db connection string from the .env
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
