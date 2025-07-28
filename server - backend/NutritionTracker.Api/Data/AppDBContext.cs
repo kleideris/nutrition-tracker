@@ -70,6 +70,8 @@ namespace NutritionTracker.Api.Data
                 .WithOne(mfi => mfi.Meal)
                 .HasForeignKey(mfi => mfi.MealId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(m => m.UserId, "IX_Meals_UserId");
             });
 
             modelBuilder.Entity<MealFoodItem>(entity =>
@@ -83,6 +85,9 @@ namespace NutritionTracker.Api.Data
                 entity.HasOne(mfi => mfi.FoodItem)
                .WithMany(f => f.MealFoodItems)
                .HasForeignKey(mfi => mfi.FoodItemId);
+
+                entity.HasIndex(mfi => mfi.MealId, "IX_MealFoodItems_MealId");
+                entity.HasIndex(mfi => mfi.FoodItemId, "IX_MealFoodItems_FoodItemId");
             });
 
             modelBuilder.Entity<FoodItem>(entity =>
@@ -106,6 +111,8 @@ namespace NutritionTracker.Api.Data
                 .WithOne(f => f.NutritionData)
                 .HasForeignKey<NutritionData>(n => n.FoodItemId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(n => n.FoodItemId, "IX_NutritionDatas_FoodItemId").IsUnique();
             });
 
             modelBuilder.Entity<Goal>(entity =>
@@ -114,6 +121,8 @@ namespace NutritionTracker.Api.Data
                 entity.HasOne(g => g.User)
                 .WithMany(u => u.Goals)
                 .HasForeignKey(g => g.UserId);
+
+                entity.HasIndex(g => g.UserId, "IX_Goals_UserId");
             });
 
             modelBuilder.Entity<UserProfile>(entity =>
@@ -126,10 +135,9 @@ namespace NutritionTracker.Api.Data
                 .WithOne(u => u.UserProfile)
                 .HasForeignKey<UserProfile>(g => g.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(p => p.UserId, "IX_UserProfiles_UserId").IsUnique();
             });
-
-
-            // TODO: Add Indexes To every Entity that needs them.
         }
     }
 }
