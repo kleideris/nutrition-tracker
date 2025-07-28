@@ -24,7 +24,7 @@ namespace NutritionTracker.Api.Data
 
         // Navigation property: each meal is linked to one user.
         // Many-to-one relationship — a user can have multiple meals.
-        public virtual User? User { get; set; }
+        public virtual User User { get; set; } = null!;
 
         // Navigation property: links this meal to its food items via join records.
         // One-to-many relationship — a single meal can include many MealFoodItem entries.
