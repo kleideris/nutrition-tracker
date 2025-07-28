@@ -12,10 +12,12 @@ namespace NutritionTracker.Api
             // Add services to the container.
 
             //Configuration to set up Entity Framework Core with SQL Server using a connection string
-            var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var connString = builder.Configuration.GetConnectionString("DefaultConnection");  // ConnString is pulled from User-Secrets for now
             builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connString));
 
             // TODO: configure a way to add db connection string from the .env
+            //var connString = Environment.GetEnvironmentVariable("DEFAULT_DB_CONNECTION");
+            //Console.WriteLine($"Connection string: {connString}");
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
