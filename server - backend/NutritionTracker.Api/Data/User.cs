@@ -10,7 +10,7 @@ namespace NutritionTracker.Api.Data
         // Login credentials and personal information.
         public string Username { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public string Password { get; set; } = null!;
+        public string PasswordHash { get; set; } = null!;
 
         // Personal name details for display and identification.
         public string Firstname { get; set; } = null!;
