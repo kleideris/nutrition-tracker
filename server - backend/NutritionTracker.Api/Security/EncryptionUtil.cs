@@ -9,9 +9,10 @@
         }
 
         // Verifies that a plain text matches the hashed cipher text
-        public static bool VerifyPasswordHash(string plainText, string cypherText)
+        public static bool IsValidPassword(string plainText, string cypherText)
         {
             return BCrypt.Net.BCrypt.Verify(plainText, cypherText);
         }
     }
 }
+// TODO: Maybe add a check in EncryptPassword to check for null strings or empty spaces and throw exception
