@@ -9,5 +9,7 @@ namespace NutritionTracker.Api.DTO
         public double HeightCm { get; set; }
         public double WeightKg { get; set; }
         public string? ActivityLvl { get; set; }
+
+        // TODO: Add validations to properties
     }
 }
