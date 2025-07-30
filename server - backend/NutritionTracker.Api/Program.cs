@@ -1,5 +1,8 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using NutritionTracker.Api.Configuration;
 using NutritionTracker.Api.Data;
+using NutritionTracker.Api.Repositories;
 
 namespace NutritionTracker.Api
 {
@@ -18,6 +21,12 @@ namespace NutritionTracker.Api
             // TODO: configure a way to add db connection string from the .env
             //var connString = Environment.GetEnvironmentVariable("DEFAULT_DB_CONNECTION");
             //Console.WriteLine($"Connection string: {connString}");
+
+            // Automatically registers all AutoMapper profiles found in the same assembly as MapperConfig
+            builder.Services.AddAutoMapper(cfg => { cfg.AddMaps(typeof(MapperConfig)); });
+
+            // Add UnitOfWork DI to the scope of IoC container
+            builder.Services.AddRepositories();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

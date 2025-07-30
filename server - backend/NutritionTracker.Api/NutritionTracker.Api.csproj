@@ -32,12 +32,9 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="DTO\" />
     <Folder Include="Models\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Middleware\" />
-    <Folder Include="Security\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
