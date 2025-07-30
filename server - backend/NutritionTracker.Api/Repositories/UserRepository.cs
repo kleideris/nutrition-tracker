@@ -9,7 +9,7 @@ namespace NutritionTracker.Api.Repositories
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
-        private readonly IMapper _mapper;
+        //private readonly IMapper _mapper;
 
         public UserRepository(AppDBContext context) : base(context)
         {
@@ -32,19 +32,16 @@ namespace NutritionTracker.Api.Repositories
         // the filters into SQL queries. Otherwise because it cant translate the func delegates
         // int sql queries, it would load everthing in memory and filter them there.
         public async Task<List<User>> GetAllUsersFilteredPaginatedAsync(int pageNumber, int pageSize,
-            List<Expression<Func<User, bool>>> predicates)
+            Expression<Func<User, bool>> predicates)
         {
             int skip = (pageNumber - 1) * pageSize;
+
             IQueryable<User> query = context.Users;
 
-            if (predicates != null && predicates.Any())
-            {
-                foreach (var predicate in predicates)
-                {
-                    query = query.Where(predicate);
-                }
+            query = query.Where(predicates ?? (u => true))  // fallback with (u => true), ensures no filters = full data
+                 .Skip(skip)
+                 .Take(pageSize);
 
-            }
             query = query.Skip(skip).Take(pageSize);
 
             return await query.ToListAsync();
@@ -67,29 +64,29 @@ namespace NutritionTracker.Api.Repositories
             return existingUser;
         }
 
-        public async Task<User?> UpdateUserProfileAsync(int id, UserProfileDTO dto)
-        {
-            var existingUser = await context.Users
-                .Include(u => u.UserProfile)
-                .FirstOrDefaultAsync(u => u.Id == id);
+        //public async Task<User?> UpdateUserProfileAsync(int id, UserProfileDTO dto)
+        //{
+        //    var existingUser = await context.Users
+        //        .Include(u => u.UserProfile)
+        //        .FirstOrDefaultAsync(u => u.Id == id);
 
-            if (existingUser == null)
-            {
-                return null;
-            }
+        //    if (existingUser == null)
+        //    {
+        //        return null;
+        //    }
 
-            if (existingUser.UserProfile == null)
-            {
-                existingUser.UserProfile = new UserProfile();
-                context.UserProfiles.Add(existingUser.UserProfile);
-            }
+        //    if (existingUser.UserProfile == null)
+        //    {
+        //        existingUser.UserProfile = new UserProfile();
+        //        context.UserProfiles.Add(existingUser.UserProfile);
+        //    }
 
 
             
-            _mapper.Map(dto, existingUser.UserProfile);  // Usage of AutoMapper to update the UserProfile entity with DTO data
-            context.Entry(existingUser.UserProfile).State = EntityState.Modified;  // Marks the UserProfile entity as modified
+        //    _mapper.Map(dto, existingUser.UserProfile);  // Usage of AutoMapper to update the UserProfile entity with DTO data
+        //    context.Entry(existingUser.UserProfile).State = EntityState.Modified;  // Marks the UserProfile entity as modified
 
-            return existingUser;
-        }
+        //    return existingUser;
+        //}
     }
 }

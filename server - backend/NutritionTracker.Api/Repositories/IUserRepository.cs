@@ -8,10 +8,10 @@ namespace NutritionTracker.Api.Repositories
     {
         Task<User?> AuthenticateAsync(string username, string password);
         Task<User?> UpdateUserAsync(int id, User user);  // TODO: think if i should change User with a UserDTO)
-        Task<User?> UpdateUserProfileAsync(int id, UserProfileDTO dto);
+        //Task<User?> UpdateUserProfileAsync(int id, UserProfileDTO dto);
         Task<User?> GetUserByUsernameAsync(string username);
         Task<List<User>> GetAllUsersFilteredPaginatedAsync(int pageNumber, int pageSize,
-            List<Expression<Func<User, bool>>> predicates);
+            Expression<Func<User, bool>> predicates);
         // Task<bool> IsEmailTakenAsync(string email);
     }
 }
