@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using NutritionTracker.Api.Configuration;
 using NutritionTracker.Api.Data;
