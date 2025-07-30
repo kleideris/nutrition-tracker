@@ -40,9 +40,8 @@ namespace NutritionTracker.Api.Repositories
             T? existingEntity = await GetAsync(id);
             if (existingEntity is null) return false;
             dbset.Remove(existingEntity);
-            return true;
+            return true;  // TODO: Check if i should use the return statement below insetad.
 
-            // TODO: Check in the end if this return logic is preffered:
             // return await context.SaveChangesAsync() > 0;
         }
     }
