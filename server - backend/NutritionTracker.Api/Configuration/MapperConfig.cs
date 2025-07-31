@@ -12,6 +12,8 @@ namespace NutritionTracker.Api.Configuration
             CreateMap<UserProfileDTO, UserProfile>()
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null)); // Ignores nulls to protect existing values.
 
+            CreateMap<User, UserReadOnlyDTO>().ReverseMap();
+
         }
     }
 }
