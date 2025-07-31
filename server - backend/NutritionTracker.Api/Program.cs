@@ -94,17 +94,15 @@ namespace NutritionTracker.Api
                           .AllowAnyHeader());
             });
 
-            // Makes Newtonsoft the default json serializer, replacing System.Text.Json
+            // Registers controller support for MVC - style routing.
             builder.Services.AddControllers()
-                .AddNewtonsoftJson(options =>
+                .AddNewtonsoftJson(options =>  // Makes Newtonsoft the default json serializer, replacing System.Text.Json
                 {
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
+                    //options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
-
-            // Registers controller support for MVC - style routing.
-            builder.Services.AddControllers();
 
             // Enables endpoint discovery
             builder.Services.AddEndpointsApiExplorer();
@@ -112,7 +110,8 @@ namespace NutritionTracker.Api
             // Configures Swagger UI and security schemes(JWT auth support)
             builder.Services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "School API", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "NutritionTracker API", Version = "v1" });
+
                 // Non-nullable reference are properly documented
                 options.SupportNonNullableReferenceTypes();
                 options.OperationFilter<AuthorizeOperationFilter>();
@@ -126,7 +125,11 @@ namespace NutritionTracker.Api
                         Scheme = JwtBearerDefaults.AuthenticationScheme,
                         BearerFormat = "JWT"
                     });
+                options.UseAllOfForInheritance();
             });
+
+            // Newtonsoft support for Swagger
+            builder.Services.AddSwaggerGenNewtonsoftSupport();
 
             //builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -137,11 +140,13 @@ namespace NutritionTracker.Api
 
             // _Configure the HTTP request pipeline.
 
+            app.UseStaticFiles();
+
             // In development mode, shows interactive Swagger documentation
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "NutritionTracker API V1"); });
             }
 
             // Forces HTTPS for all requests
