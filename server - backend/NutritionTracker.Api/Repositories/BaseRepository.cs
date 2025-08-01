@@ -16,16 +16,22 @@ namespace NutritionTracker.Api.Repositories
             dbset = context.Set<T>();  // dynamically retrieves Dbset (of the entity thats refferenced)
         }
 
+
         
         public virtual async Task AddAsync(T entity) => await dbset.AddAsync(entity);
 
+
         public virtual async Task AddRangeAsync(IEnumerable<T> entity) => await dbset.AddRangeAsync(entity);
+
 
         public virtual async Task<T?> GetAsync(int id) => await dbset.FindAsync(id);
 
+
         public virtual async Task<IEnumerable<T?>> GetAllAsync() => await dbset.ToListAsync();
 
+
         public virtual async Task<int> GetCountAsync() => await dbset.CountAsync();
+
 
         public virtual Task UpdateAsync(T entity)
         {
@@ -34,15 +40,13 @@ namespace NutritionTracker.Api.Repositories
             return Task.CompletedTask;
         }
 
-        // NOTE: Does NOT save changes to the database—requires SaveChangesAsync externally
+
         public virtual async Task<bool> DeleteAsync(int id)
         {
             T? existingEntity = await GetAsync(id);
             if (existingEntity is null) return false;
             dbset.Remove(existingEntity);
-            return true;  // TODO: Check if i should use the return statement below insetad.
-
-            // return await context.SaveChangesAsync() > 0;
+            return true;
         }
     }
 }

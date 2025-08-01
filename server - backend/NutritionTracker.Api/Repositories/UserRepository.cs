@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NutritionTracker.Api.Data;
-using NutritionTracker.Api.DTO;
 using NutritionTracker.Api.Security;
 using System.Linq.Expressions;
 
@@ -9,13 +7,14 @@ namespace NutritionTracker.Api.Repositories
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
-        //private readonly IMapper _mapper;
-
         public UserRepository(AppDBContext context) : base(context)
         {
         }
 
-        public async Task<User?> AuthenticateAsync(string usernameOrEmail, string password)
+
+
+        //Finished
+        public async Task<User?> AuthenticateUserAsync(string usernameOrEmail, string password)
         {
             var user = await context.Users
                 .FirstOrDefaultAsync(u => u.Username == usernameOrEmail || u.Email == usernameOrEmail);
@@ -28,6 +27,8 @@ namespace NutritionTracker.Api.Repositories
             return user;
         }
 
+
+        //Finished
         // By using Expression<Func<User, bool>> Instead of Func<User, bool> we allows Entity Framework to parse and convert
         // the filters into SQL queries. Otherwise because it cant translate the func delegates
         // int sql queries, it would load everthing in memory and filter them there.
@@ -47,9 +48,13 @@ namespace NutritionTracker.Api.Repositories
             return await query.ToListAsync();
         }
 
+        
+        //Finished
         public async Task<User?> GetUserByUsernameAsync(string username) => 
             await context.Users.FirstOrDefaultAsync(u => u.Username == username);
 
+
+        //Finished
         public async Task<User?> UpdateUserAsync(int id, User user)
         {
             var existingUser = await context.Users.FindAsync(id);
@@ -63,30 +68,5 @@ namespace NutritionTracker.Api.Repositories
 
             return existingUser;
         }
-
-        //public async Task<User?> UpdateUserProfileAsync(int id, UserProfileDTO dto)
-        //{
-        //    var existingUser = await context.Users
-        //        .Include(u => u.UserProfile)
-        //        .FirstOrDefaultAsync(u => u.Id == id);
-
-        //    if (existingUser == null)
-        //    {
-        //        return null;
-        //    }
-
-        //    if (existingUser.UserProfile == null)
-        //    {
-        //        existingUser.UserProfile = new UserProfile();
-        //        context.UserProfiles.Add(existingUser.UserProfile);
-        //    }
-
-
-            
-        //    _mapper.Map(dto, existingUser.UserProfile);  // Usage of AutoMapper to update the UserProfile entity with DTO data
-        //    context.Entry(existingUser.UserProfile).State = EntityState.Modified;  // Marks the UserProfile entity as modified
-
-        //    return existingUser;
-        //}
     }
 }
