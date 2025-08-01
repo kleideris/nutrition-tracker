@@ -1,12 +1,7 @@
-using AutoMapper;
-using Azure.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NutritionTracker.Api.Configuration;
@@ -15,8 +10,6 @@ using NutritionTracker.Api.Data;
 using NutritionTracker.Api.Repositories;
 using NutritionTracker.Api.Services;
 using Serilog;
-using System;
-using System.Diagnostics;
 using System.Text;
 
 namespace NutritionTracker.Api
@@ -140,13 +133,11 @@ namespace NutritionTracker.Api
 
             // _Configure the HTTP request pipeline.
 
-            app.UseStaticFiles();
-
             // In development mode, shows interactive Swagger documentation
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "NutritionTracker API V1"); });
+                app.UseSwaggerUI(/*c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "NutritionTracker API V1"); }*/);
             }
 
             // Forces HTTPS for all requests
