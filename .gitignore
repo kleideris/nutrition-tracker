@@ -18,6 +18,7 @@ Generated_Code/
 # Local .NET Secrets
 secrets.json
 .env
+.env.example
 
 # Entity Framework
 Migrations/
@@ -25,6 +26,9 @@ Migrations/
 
 # Ignore Visual Studio solution files during early development
 *.sln
+
+# Ignore Logs
+*Logs/
 
 # ======================
 # 🧑‍🎨 React (Vite / Node)
