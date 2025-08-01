@@ -1,4 +1,5 @@
-﻿using NutritionTracker.Api.Core.Filters;
+﻿using NutritionTracker.Api.Core.Enums;
+using NutritionTracker.Api.Core.Filters;
 using NutritionTracker.Api.Data;
 using NutritionTracker.Api.DTO;
 
@@ -10,7 +11,9 @@ namespace NutritionTracker.Api.Services
         Task<User?> GetUserByIdAsync(int id);
         Task<User?> GetUserByUsernameAsync(string username);
         Task<List<User>> GetAllUsersFilteredPaginatedAsync(int pageNumber, int pageSize, UserFiltersDTO userFilterDTO);
-
-        //string CreateUserToken(int userId, string username, string email, UserRole userRole, string appSecurityKey);
+        string CreateUserToken(int userId, string username, string email,
+                UserRole userRole, string appSecurityKey);
+        Task<RegisterResult> RegisterUserAsync(UserRegisterDTO dto);
+        Task<bool> DeleteUserAsync(int id);
     }
 }
