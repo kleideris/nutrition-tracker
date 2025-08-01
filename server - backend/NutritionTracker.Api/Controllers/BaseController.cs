@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace NutritionTracker.Api.Controllers
 {
     // [Produces("application/json")] default since it derives from ControllerBase
-    [Route("api/[controller]/[Action]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class BaseController : ControllerBase
     {
