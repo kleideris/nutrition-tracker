@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NutritionTracker.Api.Models;
 using NutritionTracker.Api.Services;
@@ -18,7 +19,8 @@ namespace NutritionTracker.Api.Controllers
             _applicationService = applicationService;
         }
 
-        private ApplicationUser? _appUser;
+        private ApplicationUser? _appUser;  // this is uded to cache the result of parsing the claims
+
 
         protected ApplicationUser? AppUser
         {
