@@ -16,6 +16,10 @@ namespace NutritionTracker.Api.Configuration
             CreateMap<UserRegisterDTO, User>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => EncryptionUtil.EncryptPassword(src.Password!)));
             CreateMap<MealPostDTO, Meal>().ReverseMap();
+            CreateMap<Meal, MealReadOnlyDTO>().ReverseMap();
+            CreateMap<MealFoodItem, MealFoodItemDTO>().ReverseMap();
+            CreateMap<FoodItemDTO, FoodItem>().ReverseMap();
+            CreateMap<NutritionDataDTO, NutritionData>().ReverseMap();
 
         }
     }
