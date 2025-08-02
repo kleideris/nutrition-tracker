@@ -2,9 +2,9 @@
 
 namespace NutritionTracker.Api.DTO
 {
-    public class MealPostDTO
+    public class MealReadOnlyDTO
     {
-        public int UserId { get; set; }
+        public MealType MealType { get; set; }
         public DateTime Timestamp { get; set; }
         public List<MealFoodItemDTO> FoodItems { get; set; } = new();
 
