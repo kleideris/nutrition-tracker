@@ -12,7 +12,9 @@ namespace NutritionTracker.Api.Repositories
         }
 
         public UserRepository UserRepository => new (_context);
-        public MealRepository MealRepository => new(_context);
+        public MealRepository MealRepository => new (_context);
+        public MealFoodItemRepository MealFoodItemRepository => new (_context);
+        public FoodItemRepository FoodItemRepository => new(_context);
 
         public async Task<bool> SaveAsync()
         {

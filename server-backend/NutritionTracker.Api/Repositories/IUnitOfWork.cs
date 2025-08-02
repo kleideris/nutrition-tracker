@@ -5,6 +5,8 @@
     {
         UserRepository UserRepository { get; }
         MealRepository MealRepository { get; }
+        MealFoodItemRepository MealFoodItemRepository { get; }
+        FoodItemRepository FoodItemRepository { get; }
 
         Task<bool> SaveAsync();
     }
