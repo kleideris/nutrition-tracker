@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using NutritionTracker.Api.Core.Enums;
 using NutritionTracker.Api.Data;
 using NutritionTracker.Api.DTO;
 using NutritionTracker.Api.Repositories;
@@ -22,9 +23,10 @@ namespace NutritionTracker.Api.Services
 
 
         //Finished (Adds meal but need to make it so you can only add 1 type of meal per day...)
-        public async Task<bool> AddMealAsync(MealPostDTO dto)
+        public async Task<bool> AddMealAsync(MealType mealType, MealPostDTO dto)
         {
             Meal? meal = _mapper.Map<Meal>(dto);
+            meal.MealType = mealType;
 
             if (meal == null)
             {
@@ -46,33 +48,14 @@ namespace NutritionTracker.Api.Services
         }
 
 
-        //WIP
-        public Task<Meal?> GetMealByIdAsync(int mealId) { throw new NotImplementedException(); }
-        //{
-        //    try
-        //    {
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("{Message},{Exception}", ex.Message, ex.StackTrace);
-        //        throw;
-        //    }
-        //}
+        //Finished with minor bugs
+        public async Task<Meal?> GetMealByIdAsync(int mealId) => await _unitOfWork.MealRepository.GetMealByIdAsync(mealId);
 
 
-        //WIP
-        public Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId) { throw new NotImplementedException(); }
-        //{
-        //    try
-        //    {
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("{Message},{Exception}", ex.Message, ex.StackTrace);
-        //        throw;
-        //    }
-        //}
+        //Finished with minor bugs
+        public Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId) => _unitOfWork.MealRepository.GetMealsByUserAsync(userId);
     }
 }
+
+
+

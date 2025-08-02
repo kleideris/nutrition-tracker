@@ -4,6 +4,7 @@ using NutritionTracker.Api.Controllers;
 using NutritionTracker.Api.Core.Enums;
 using NutritionTracker.Api.Data;
 using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.Exceptions;
 using NutritionTracker.Api.Services;
 
 namespace NutritionTracker.Api.Controllers
@@ -22,27 +23,30 @@ namespace NutritionTracker.Api.Controllers
 
 
 
-        //WIP
-        //[HttpGet("{id}")]
-        //public Task<IActionResult> GetMealsById(int id)
-        //{
+        //Finished with minor bugs
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetMealsById(int id)
+        {
+            var meal = await _applicationService.MealService.GetMealByIdAsync(id) ?? throw new EntityNotFoundException("Meal", "Meal: " + id + " NotFound");
+            var returnedDto = _mapper.Map<MealReadOnlyDTO>(meal);
+            return Ok(returnedDto);
+        }
 
-        //}
 
-
-        //WIP
-        //[HttpGet("{food-item}")]
-        //public Task<IActionResult> GetMealFoodItem(string foodItem)
-        //{
-
-        //}
+        //Finished with minor bugs
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetMealsByUser(int userId)
+        {
+            var meals = await _applicationService.MealService.GetMealsByUserAsync(userId) ?? throw new EntityNotFoundException("Meal", "Meal: " + userId + " NotFound");
+            return Ok(meals);
+        }
 
 
         //Finished  (Adds meal but need to make it so you can only add 1 type of meal per day...)
-        [HttpPost("{meal-type}")]
-        public async Task<IActionResult> PostMeal([FromBody] MealPostDTO dto)
+        [HttpPost("{mealType}")]
+        public async Task<IActionResult> AddMeal(MealType mealType, [FromBody] MealPostDTO dto)
         {
-            bool success = await _applicationService.MealService.AddMealAsync(dto);
+            bool success = await _applicationService.MealService.AddMealAsync(mealType, dto);
 
             if (!success)
             {
