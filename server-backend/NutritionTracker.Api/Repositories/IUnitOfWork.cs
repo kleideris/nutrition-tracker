@@ -4,6 +4,7 @@
     public interface IUnitOfWork
     {
         UserRepository UserRepository { get; }
+        MealRepository MealRepository { get; }
 
         Task<bool> SaveAsync();
     }
