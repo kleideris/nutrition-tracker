@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NutritionTracker.Api.Models;
 using NutritionTracker.Api.Services;
 using System.Security.Claims;
@@ -13,13 +11,13 @@ namespace NutritionTracker.Api.Controllers
     public class BaseController : ControllerBase
     {
         public readonly IApplicationService _applicationService;
+        private ApplicationUser? _appUser;  // this is used to cache the result of parsing the claims
 
         protected BaseController(IApplicationService applicationService)
         {
             _applicationService = applicationService;
         }
 
-        private ApplicationUser? _appUser;  // this is uded to cache the result of parsing the claims
 
 
         protected ApplicationUser? AppUser

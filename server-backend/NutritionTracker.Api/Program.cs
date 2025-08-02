@@ -10,6 +10,7 @@ using NutritionTracker.Api.Data;
 using NutritionTracker.Api.Repositories;
 using NutritionTracker.Api.Services;
 using Serilog;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 
 namespace NutritionTracker.Api
@@ -119,6 +120,9 @@ namespace NutritionTracker.Api
                         BearerFormat = "JWT"
                     });
                 options.UseAllOfForInheritance();
+
+                // Show enums as strings
+                options.SchemaGeneratorOptions = new SchemaGeneratorOptions { UseAllOfToExtendReferenceSchemas = false };
             });
 
             // Newtonsoft support for Swagger

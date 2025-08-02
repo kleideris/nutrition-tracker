@@ -36,7 +36,7 @@ namespace NutritionTracker.Api.Controllers
 
         //Finished
         [HttpGet("{username}")]
-        public async Task<ActionResult<UserReadOnlyDTO>> GetUserByUsernameAsync(string username)
+        public async Task<ActionResult<UserReadOnlyDTO>> GetUserByUsername(string username)
         {
             var user = await _applicationService.UserService.GetUserByUsernameAsync(username) ?? throw new EntityNotFoundException("User", "User: " + username + " NotFound");
             var returnedDto = _mapper.Map<UserReadOnlyDTO>(user);
@@ -46,7 +46,7 @@ namespace NutritionTracker.Api.Controllers
 
         //Finished--
         [HttpGet("filtered")]
-        public async Task<IActionResult> GetFilteredPaginatedUsers([FromQuery] UserFiltersDTO userFilterDTO, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetFilteredUsersPaginated([FromQuery] UserFiltersDTO userFilterDTO, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
