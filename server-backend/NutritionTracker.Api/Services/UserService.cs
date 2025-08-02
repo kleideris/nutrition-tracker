@@ -42,9 +42,9 @@ namespace NutritionTracker.Api.Services
                 users = await _unitOfWork.UserRepository
                     .GetAllUsersFilteredPaginatedAsync(pageNumber, pageSize, predicates);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError("{Message},{Exception}", e.Message, e.StackTrace);
+                _logger.LogError("{Message},{Exception}", ex.Message, ex.StackTrace);
                 throw;
             }
             return users;
