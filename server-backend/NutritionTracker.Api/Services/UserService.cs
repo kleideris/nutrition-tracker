@@ -32,22 +32,19 @@ namespace NutritionTracker.Api.Services
         //Finished
         public async Task<List<User>> GetAllUsersFilteredPaginatedAsync(int pageNumber, int pageSize, UserFiltersDTO userFilterDTO)
         {
-            List<User> users;
-            Expression<Func<User, bool>> predicates;
-
             try
             {
-                predicates = UserPredicateBuilder.BuildPredicates(userFilterDTO);
+                Expression<Func<User, bool>> predicates = UserPredicateBuilder.BuildPredicates(userFilterDTO);
 
-                users = await _unitOfWork.UserRepository
+                var users = await _unitOfWork.UserRepository
                     .GetAllUsersFilteredPaginatedAsync(pageNumber, pageSize, predicates);
+                return users;
             }
             catch (Exception ex)
             {
                 _logger.LogError("{Message},{Exception}", ex.Message, ex.StackTrace);
                 throw;
             }
-            return users;
         }
 
 
@@ -62,19 +59,18 @@ namespace NutritionTracker.Api.Services
         //Finished
         public async Task<User?> VerifyAndGetUserAsync(UserLoginDTO credentials)
         {
-            User? user;
-
             try
             {
-                user = await _unitOfWork.UserRepository.AuthenticateUserAsync(credentials.UsernameOrEmail!, credentials.Password!);
+                var user = await _unitOfWork.UserRepository.AuthenticateUserAsync(credentials.UsernameOrEmail!, credentials.Password!);
                 _logger.LogInformation("{Message}", $"User: " + user + " found and returned.");  // TODO: needs user ToString for this to work
+                return user;
             }
             catch (Exception ex)
             {
                 _logger.LogError("{Message}{Exception}", ex.Message, ex.StackTrace);
                 throw;
             }
-            return user;
+            
         }
 
 
@@ -125,21 +121,19 @@ namespace NutritionTracker.Api.Services
 
         public async Task<bool> DeleteUserAsync(int id)
         {
-            bool userDeleted = false;
-
+            
             try
             {
-                userDeleted = await _unitOfWork.UserRepository.DeleteAsync(id);
+                bool deleted = await _unitOfWork.UserRepository.DeleteAsync(id);
                 _logger.LogInformation("{Message}", "User with id: " + id + " deleted.");
                 await _unitOfWork.SaveAsync();
+                return deleted;
             }
             catch (Exception ex)
             {
                 _logger.LogError("{Message}{Exception}", ex.Message, ex.StackTrace);
                 throw;
             }
-
-            return userDeleted;
         }
     }
 }
