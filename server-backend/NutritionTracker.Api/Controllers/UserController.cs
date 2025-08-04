@@ -95,7 +95,7 @@ namespace NutritionTracker.Api.Controllers
 
         //Finished
         [HttpPost]
-        public async Task<ActionResult<JwtTokenDTO>> LoginUser(UserLoginDTO credentials)
+        public async Task<ActionResult<JwtTokenDTO>> LoginUser([FromBody]UserLoginDTO credentials)
         {
             var user = await _applicationService.UserService.VerifyAndGetUserAsync(credentials);
 
