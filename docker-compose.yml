@@ -1,0 +1,61 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "kX57981630!"
+    ports:
+      - "1433:1433"
+    networks:
+      - backendnet
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+      - ./_docker/init.sql:/init.sql
+      - ./_docker/entrypoint.sh:/entrypoint.sh
+    command: /bin/bash /entrypoint.sh
+    healthcheck:
+      test: ["CMD", "sqlcmd", "-U", "sa", "-P", "kX57981630!", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./server-backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      APP_UID: 1000
+      JWT_SECRET: ${JWT_SECRET}
+      ASPNETCORE_URLS: "http://0.0.0.0:8080"
+      DB_CONNECTION: ${DB_CONNECTION}
+    depends_on:
+      - sqlserver
+    networks:
+      - backendnet
+    env_file:
+      - ./server-backend/NutritionTracker.Api/.env
+
+  frontend:
+    build:
+      context: ./client-frontend
+      dockerfile: Dockerfile
+      # args:
+        # VITE_API_URL: http://backend:8080  # 👈 Docker internal hostname
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - backendnet
+    env_file:
+    - ./client-frontend/.env
+
+networks:
+  backendnet:
+
+volumes:
+  sqlserverdata:
