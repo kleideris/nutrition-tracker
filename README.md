@@ -3,7 +3,6 @@
 ![React](https://img.shields.io/badge/React-19-blue)
 ![Docker](https://img.shields.io/badge/Docker-ready-blue)
 ![License](https://img.shields.io/github/license/kleideris/nutrition-tracker)
-![Build Status](https://img.shields.io/github/actions/workflow/status/kleideris/nutrition-tracker/docker.yml)
 ![Issues](https://img.shields.io/github/issues/kleideris/nutrition-tracker)
 ![Stars](https://img.shields.io/github/stars/kleideris/nutrition-tracker?style=social)
 ![Forks](https://img.shields.io/github/forks/kleideris/nutrition-tracker?style=social)
