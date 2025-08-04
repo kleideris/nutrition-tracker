@@ -22,13 +22,12 @@ namespace NutritionTracker.Api
             // This initializes a WebApplicationBuilder, which helps you configure services, middleware, and settings for your web application
             var builder = WebApplication.CreateBuilder(args);
 
-            // Register Entity Framework Core with SQL Server context with DI using config connection string
-            var connString = builder.Configuration.GetConnectionString("DefaultConnection");  // ConnString is pulled from User-Secrets for now
-            builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connString));  // AddDbContext is scoped - per request, a new instance is created
+            // injects .env variables
+            ConfigurationLoader.LoadEnvironmentVariables(builder.Configuration);
 
-            // TODO: configure a way to add db connection string from the .env
-            //var connString = Environment.GetEnvironmentVariable("DEFAULT_DB_CONNECTION");
-            //Console.WriteLine($"Connection string: {connString}");
+            // Register Entity Framework Core with SQL Server context with DI using config connection string
+            var connString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+            builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connString));  // AddDbContext is scoped - per request, a new instance is created
 
             // AutoMapper setup. Automatically registers all AutoMapper profiles found in the same assembly as MapperConfig
             builder.Services.AddAutoMapper(cfg => { cfg.AddMaps(typeof(MapperConfig)); });
@@ -46,7 +45,6 @@ namespace NutritionTracker.Api
                 config.ReadFrom.Configuration(context.Configuration);
             });
 
-            
             // This configures JWT-based authentication using bearer tokens
             builder.Services.AddAuthentication(options =>
             {
@@ -70,7 +68,7 @@ namespace NutritionTracker.Api
                     ValidateIssuerSigningKey = true,
 
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                    .GetBytes(builder.Configuration["Authentication:SecretKey"]!))
+                    .GetBytes(jwtSettings["SecretKey"]!))
                 };
             });        
 
@@ -81,12 +79,18 @@ namespace NutritionTracker.Api
                     .AllowAnyHeader()
                     .AllowAnyOrigin());
             });
-            builder.Services.AddCors(options => {
-                options.AddPolicy("AngularClient",  // restricted to Angular dev server at port 4200.
-                    b => b.WithOrigins("http://localhost:4200") // Assuming Angular runs on localhost:4200
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
-            });
+            //builder.Services.AddCors(options => {
+            //    options.AddPolicy("AllowReactClient",  // restricted to React dev server at port 5173.
+            //        b => b.WithOrigins("http://localhost:5173/") // Assuming React runs on localhost:5173
+            //              .AllowAnyMethod()
+            //              .AllowAnyHeader());
+            //});
+            //builder.Services.AddCors(options => {
+            //    options.AddPolicy("AllowDockerClient",  // restricted to Docker composed frontend at port 3000.
+            //        b => b.WithOrigins("http://localhost:3000/") // Assuming Docker frontend runs on localhost:3000
+            //              .AllowAnyMethod()
+            //              .AllowAnyHeader());
+            //});
 
             // Registers controller support for MVC - style routing.
             builder.Services.AddControllers()
@@ -137,14 +141,48 @@ namespace NutritionTracker.Api
 
             // _Configure the HTTP request pipeline.
 
-            // In development mode, shows interactive Swagger documentation
+            // Initializes the db for docker.
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+                var connection = dbContext.Database.GetDbConnection();
+
+                try
+                {
+                    connection.Open();
+                    using var command = connection.CreateCommand();
+                    command.CommandText = "SELECT db_id('NutritionTrackerDB')";
+                    var result = command.ExecuteScalar();
+
+                    if (result == DBNull.Value || result == null)
+                    {
+                        dbContext.Database.Migrate();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("DB check failed: " + ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+
+            //In development mode, shows interactive Swagger documentation
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(/*c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "NutritionTracker API V1"); }*/);
             }
 
-            // Forces HTTPS for all requests
+            // Forces HTTPS for all requests when not in development
+            if (!app.Environment.IsDevelopment())
+            //{
+            //    app.UseHttpsRedirection();
+            //    // Configure Kestrel for HTTPS
+            //}
+
             app.UseHttpsRedirection();
 
             // Applies CORS rules
