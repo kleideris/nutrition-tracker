@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -11,6 +12,7 @@ using NutritionTracker.Api.Repositories;
 using NutritionTracker.Api.Services;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Reflection;
 using System.Text;
 
 namespace NutritionTracker.Api
@@ -127,12 +129,18 @@ namespace NutritionTracker.Api
 
                 // Show enums as strings
                 options.SchemaGeneratorOptions = new SchemaGeneratorOptions { UseAllOfToExtendReferenceSchemas = false };
+                
+                // Allows Xlm comment support
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+
             });
 
             // Newtonsoft support for Swagger
             builder.Services.AddSwaggerGenNewtonsoftSupport();
 
-            //builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
             // _Add services to the container.
 
@@ -140,6 +148,13 @@ namespace NutritionTracker.Api
             var app = builder.Build();  // finalizes the DI container setup and constructs the application pipeline
 
             // _Configure the HTTP request pipeline.
+
+            // Applies Global exception handler.
+            app.UseExceptionHandler(options => { } ); 
+
+            // Create initial admin if there isnt any in the db
+            //AdminSeeder.SeedInitialAdminAsync(app.Services).GetAwaiter().GetResult();
+
 
             // Initializes the db for docker.
             using (var scope = app.Services.CreateScope())
@@ -196,6 +211,8 @@ namespace NutritionTracker.Api
 
             // Maps controller endpoints to route requests.
             app.MapControllers();
+
+            
 
             // Starts the app and begins listening for incoming HTTP requests.
             app.Run();
