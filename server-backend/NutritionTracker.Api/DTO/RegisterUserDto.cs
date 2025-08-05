@@ -2,7 +2,7 @@
 
 namespace NutritionTracker.Api.DTO
 {
-    public class UserRegisterDTO
+    public class RegisterUserDto
     {
         [Required(ErrorMessage = "Username is required")]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Username must be between 2 and 50 characters.")]

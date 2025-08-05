@@ -1,6 +1,6 @@
 ﻿namespace NutritionTracker.Api.DTO
 {
-    public class FoodItemReadOnlyDTO
+    public class FoodItemReadOnlyDto
     {
     }
 }

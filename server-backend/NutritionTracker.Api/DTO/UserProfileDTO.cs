@@ -2,7 +2,7 @@
 
 namespace NutritionTracker.Api.DTO
 {
-    public class UserProfileDTO
+    public class UserProfileDto
     {
         public DateOnly DateOfBirth { get; set; }
         public Gender Gender { get; set; }

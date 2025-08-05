@@ -2,7 +2,7 @@
 
 namespace NutritionTracker.Api.DTO
 {
-    public class UserReadOnlyDTO
+    public class UserReadOnlyDto
     {
         public int Id { get; set; }
         public string? Username { get; set; }

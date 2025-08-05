@@ -1,6 +1,6 @@
 ﻿namespace NutritionTracker.Api.DTO
 {
-    public class NutritionDataDTO
+    public class NutritionDataDto
     {
         public float Calories { get; set; }
         public float Fats { get; set; }

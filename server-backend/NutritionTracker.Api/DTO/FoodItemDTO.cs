@@ -2,9 +2,9 @@
 
 namespace NutritionTracker.Api.DTO
 {
-    public class FoodItemDTO
+    public class FoodItemDto
     {
         public string Name { get; set; } = null!;
-        public virtual NutritionDataDTO NutritionData { get; set; } = null!;
+        public virtual NutritionDataDto NutritionData { get; set; } = null!;
     }
 }
