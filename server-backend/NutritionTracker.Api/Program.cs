@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -24,18 +23,23 @@ namespace NutritionTracker.Api
             // This initializes a WebApplicationBuilder, which helps you configure services, middleware, and settings for your web application
             var builder = WebApplication.CreateBuilder(args);
 
-            // injects .env variables
-            ConfigurationLoader.LoadEnvironmentVariables(builder.Configuration);
+
+            // Loads .env variables to configuration
+            builder.Configuration.AddEnvSettings();
+
 
             // Register Entity Framework Core with SQL Server context with DI using config connection string
             var connString = builder.Configuration["ConnectionStrings:DefaultConnection"];
             builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connString));  // AddDbContext is scoped - per request, a new instance is created
 
+
             // AutoMapper setup. Automatically registers all AutoMapper profiles found in the same assembly as MapperConfig
             builder.Services.AddAutoMapper(cfg => { cfg.AddMaps(typeof(MapperConfig)); });
 
+
             // Add UnitOfWork DI to the scope of IoC container
             builder.Services.AddRepositories();
+
 
             // Add AplicationService DI to the scope of IoC container
             builder.Services.AddScoped<IApplicationService, ApplicationService>();
@@ -46,6 +50,7 @@ namespace NutritionTracker.Api
             {
                 config.ReadFrom.Configuration(context.Configuration);
             });
+
 
             // This configures JWT-based authentication using bearer tokens
             builder.Services.AddAuthentication(options =>
@@ -74,6 +79,7 @@ namespace NutritionTracker.Api
                 };
             });        
 
+
             // Enables Cross-Origin Resource Sharing so front-end clients can communicate with the API.
             builder.Services.AddCors(options => {
                 options.AddPolicy("AllowAll",  // unrestricted access (good for testing).
@@ -94,6 +100,7 @@ namespace NutritionTracker.Api
             //              .AllowAnyHeader());
             //});
 
+
             // Registers controller support for MVC - style routing.
             builder.Services.AddControllers()
                 .AddNewtonsoftJson(options =>  // Makes Newtonsoft the default json serializer, replacing System.Text.Json
@@ -104,8 +111,10 @@ namespace NutritionTracker.Api
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
 
+
             // Enables endpoint discovery
             builder.Services.AddEndpointsApiExplorer();
+
 
             // Configures Swagger UI and security schemes(JWT auth support)
             builder.Services.AddSwaggerGen(options =>
@@ -137,17 +146,22 @@ namespace NutritionTracker.Api
 
             });
 
+
             // Newtonsoft support for Swagger
             builder.Services.AddSwaggerGenNewtonsoftSupport();
 
+
+            // DI GlobalExceptionHandler
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-            // _Add services to the container.
 
             // Builds the app with all configured services and middleware
             var app = builder.Build();  // finalizes the DI container setup and constructs the application pipeline
 
-            // _Configure the HTTP request pipeline.
+
+            // Applies the error handler middleware
+            app.UseMiddleware<ErrorHandlerMiddleware>();
+
 
             // Applies Global exception handler.
             app.UseExceptionHandler(options => { } ); 
@@ -184,12 +198,14 @@ namespace NutritionTracker.Api
                 }
             }
 
+
             //In development mode, shows interactive Swagger documentation
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(/*c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "NutritionTracker API V1"); }*/);
             }
+
 
             // Forces HTTPS for all requests when not in development
             if (!app.Environment.IsDevelopment())
@@ -198,21 +214,26 @@ namespace NutritionTracker.Api
             //    // Configure Kestrel for HTTPS
             //}
 
+            
+            // Redirects http requests to https
             app.UseHttpsRedirection();
+
 
             // Applies CORS rules
             app.UseCors("AllowAll");
               
+
             // Applies Authentication middleware
             app.UseAuthentication();
+
 
             // Applies Authorization rules
             app.UseAuthorization();
 
+
             // Maps controller endpoints to route requests.
             app.MapControllers();
 
-            
 
             // Starts the app and begins listening for incoming HTTP requests.
             app.Run();
