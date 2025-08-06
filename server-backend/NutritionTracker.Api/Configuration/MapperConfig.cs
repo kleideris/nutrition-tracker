@@ -20,6 +20,10 @@ namespace NutritionTracker.Api.Configuration
             CreateMap<MealFoodItem, MealFoodItemDto>().ReverseMap();
             CreateMap<FoodItemDto, FoodItem>().ReverseMap();
             CreateMap<NutritionDataDto, NutritionData>().ReverseMap();
+            CreateMap<UpdateUserDto, User>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<User, UpdateUserDto>();
+
 
         }
     }
