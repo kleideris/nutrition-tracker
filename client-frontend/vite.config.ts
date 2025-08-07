@@ -16,7 +16,7 @@ export default defineConfig({
     tailwindcss()
   ],
   server: {
-    open: true, // This opens the browser automatically
+    // open: true, // This opens the browser automatically
     port: parseInt(process.env.PORT ?? '5173'), // This sets the frontend port from the .env
     // proxy: {
     //   '/api': {
