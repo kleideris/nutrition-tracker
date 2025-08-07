@@ -1,21 +1,63 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using NutritionTracker.Api.DTO;
 using NutritionTracker.Api.Services;
 
 namespace NutritionTracker.Api.Controllers
 {
-    public class MealFoodItemController : BaseController
+    [Route("api/meals/{mealId}/fooditems")]
+    [ApiController]
+    public class MealFoodItemController(IApplicationService applicationService, IConfiguration configuration,
+        IMapper mapper) : BaseController(applicationService)
     {
-        private readonly IConfiguration _configuration;
-        private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration = configuration;
+        private readonly IMapper _mapper = mapper;
 
-        public MealFoodItemController(IApplicationService applicationService, IConfiguration configuration,
-            IMapper mapper) : base(applicationService)
+
+        //WIP#
+        [HttpPost("{foodItemId}")]
+        public async Task<IActionResult> AddFoodItemToMeal(int mealId, int foodItemId, [FromBody] AddMealFoodItemDto dto)
         {
-            _configuration = configuration;
-            _mapper = mapper;
+            var result = await _applicationService.MealFoodItemService.AddFoodItemToMealAsync(mealId, foodItemId, dto.Quantity, dto.Unit);
+            return result ? Ok() : BadRequest();
         }
 
 
+        //WIP#
+        [HttpGet()]
+        public async Task<IActionResult> GetAllMealFoodItems(int mealId)
+        {
+            var items = await _applicationService.MealFoodItemService.GetByMealIdAsync(mealId);
+            return items != null ? Ok(items) : NotFound();
+        }
+            
+
+
+        //WIP#
+        [HttpDelete("{foodItemId}")]
+        public async Task<IActionResult> DeleteFoodItemFromMeal(int mealId, int foodItemId)
+        {
+            var result = await _applicationService.MealFoodItemService.DeleteFoodItemOfMealAsync(mealId, foodItemId, 0, "");
+            return result ? Ok() : NotFound();
+        }
+
+
+        //WIP#
+        [HttpGet("{foodItemId}")]
+        public async Task<IActionResult> GetMealFoodItem(int mealId, int foodItemId)
+        {
+            var item = await _applicationService.MealFoodItemService.GetByJoinedIdsAsync(mealId, foodItemId);
+            return item != null ? Ok(item) : NotFound();
+        }
+
+
+        //WIP#
+        [HttpPut("{foodItemId}")]
+        public async Task<IActionResult> UpdateQuantity(int mealId, int foodItemId, [FromBody] UpdateMealFoodItemDto dto)
+        {
+            var result = await _applicationService.MealFoodItemService.UpdateQuantityOfFoodItemAsync(mealId, foodItemId, dto.Quantity, dto.Unit);
+            return result ? Ok() : NotFound();
+        }
 
     }
 }
