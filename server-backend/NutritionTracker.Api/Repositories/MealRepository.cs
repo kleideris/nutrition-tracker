@@ -1,14 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NutritionTracker.Api.Core.Enums;
 using NutritionTracker.Api.Data;
 
 namespace NutritionTracker.Api.Repositories
 {
-    public class MealRepository : BaseRepository<Meal>, IMealRepository
+    public class MealRepository(AppDBContext context) : BaseRepository<Meal>(context), IMealRepository
     {
-        public MealRepository(AppDBContext context) : base(context)
-        {
-        }
 
+
+        //WIP
+        public async Task<bool> IsMealTypeLoggedForDayAsync(int userId, MealType mealType, DateTime date)
+        {
+            return await dbset.AnyAsync(m =>
+                m.UserId == userId &&
+                m.MealType == mealType &&
+                m.Timestamp.Date == date.Date);
+        }
 
 
         //Finished (Adds meal but need to make it so you can only add 1 type of meal per day...)

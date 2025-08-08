@@ -24,7 +24,7 @@ namespace NutritionTracker.Api.Repositories
 
 
         //WIP#
-        public async Task<IEnumerable<MealFoodItem>> GetByByMealIdAsync(int mealId)
+        public async Task<IEnumerable<MealFoodItem>> GetByMealIdAsync(int mealId)
         {
             return await context.MealFoodItems
                 .Where(mfi => mfi.MealId == mealId)
