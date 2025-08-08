@@ -6,7 +6,7 @@ namespace NutritionTracker.Api.DTO
     {
         public int UserId { get; set; }
         public DateTime Timestamp { get; set; }
-        public List<MealFoodItemDto> FoodItems { get; set; } = new();
+        public List<MealFoodItemDto> MealFoodItems { get; set; } = new();
 
     }
 }
