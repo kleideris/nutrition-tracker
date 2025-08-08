@@ -92,13 +92,15 @@ namespace NutritionTracker.Api.Data
 
             modelBuilder.Entity<FoodItem>(entity =>
             {
-                // Configure one-to-many: FoodItem → MealFoodItem.
-                entity.HasMany(f => f.MealFoodItems)
-                .WithOne(mfi => mfi.FoodItem)
-                .HasForeignKey(mfi => mfi.FoodItemId);
+                // Configure one-to-one: FoodItem → NutritionData.
+                entity.HasOne(f => f.NutritionData)
+                .WithOne(n => n.FoodItem)
+                .HasForeignKey<NutritionData>(n => n.FoodItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
                 // Configure one-to-many: FoodItem → MealFoodItem.
-                entity.HasMany(m => m.MealFoodItems)
+                entity.HasMany(f => f.MealFoodItems)
                 .WithOne(mfi => mfi.FoodItem)
                 .HasForeignKey(mfi => mfi.FoodItemId)
                 .OnDelete(DeleteBehavior.Restrict);  // Prevents deleting shared FoodItem when a meal is deleted!
