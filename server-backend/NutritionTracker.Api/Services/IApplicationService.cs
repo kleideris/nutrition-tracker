@@ -2,6 +2,7 @@
 {
     public interface IApplicationService
     {
+        public AuthService AuthService { get; }
         public UserService UserService { get; }
         public MealService MealService { get; }
         public MealFoodItemService MealFoodItemService { get; }

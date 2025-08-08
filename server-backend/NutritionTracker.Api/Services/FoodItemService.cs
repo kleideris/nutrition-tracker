@@ -22,7 +22,7 @@ namespace NutritionTracker.Api.Services
 
 
         //Finished
-        public async Task<bool> AddFoodItemAsync(FoodItemDTO dto)
+        public async Task<bool> AddFoodItemAsync(FoodItemDto dto)
         {
             FoodItem foodItem = _mapper.Map<FoodItem>(dto);
             if (foodItem == null)
@@ -76,23 +76,14 @@ namespace NutritionTracker.Api.Services
         }
 
 
-        //Finished
-        public async Task<FoodItem?> GetFoodItemByNameAsync(string name)
+        public async Task<FoodItem?> GetByNameAsync(string name)
         {
-            try
-            {
                 FoodItem? foodItem = await _unitOfWork.FoodItemRepository.GetByNameAsync(name);
                 if (foodItem == null)
                 {
                     throw new EntityNotFoundException("FoodItem", "Food item with name " + name + " was not found");
                 }
                 return foodItem;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}{Exception}", ex.Message, ex.StackTrace);
-                throw;
-            }
         }
     }
 }

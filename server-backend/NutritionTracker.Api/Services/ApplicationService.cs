@@ -14,6 +14,7 @@ namespace NutritionTracker.Api.Services
             _mapper = mapper;
         }
 
+        public AuthService AuthService => new AuthService(_unitOfWork, _mapper);
         public UserService UserService => new (_unitOfWork, _mapper);
         public MealService MealService => new (_unitOfWork, _mapper);
         public MealFoodItemService MealFoodItemService => new (_unitOfWork, _mapper);

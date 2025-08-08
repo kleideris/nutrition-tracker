@@ -7,13 +7,11 @@ namespace NutritionTracker.Api.Services
 {
     public interface IUserService
     {
-        Task<User?> VerifyAndGetUserAsync(UserLoginDTO credentials);
-        Task<User?> GetUserByIdAsync(int id);
-        Task<User?> GetUserByUsernameAsync(string username);
-        Task<List<User>> GetAllUsersFilteredPaginatedAsync(int pageNumber, int pageSize, UserFiltersDTO userFilterDTO);
-        string CreateUserToken(int userId, string username, string email,
-                UserRole userRole, string appSecurityKey);
-        Task<RegisterResult> RegisterUserAsync(UserRegisterDTO dto);
+        Task<User?> VerifyAndGetAsync(LoginUserDto credentials);
+        Task<User?> GetByIdAsync(int id);
+        Task<User?> GetByUsernameAsync(string username);
+        Task<List<User>> GetFilteredPaginatedAsync(int pageNumber, int pageSize, UserFiltersDTO userFilterDTO);
+        Task<RegisterResult> RegisterAsync(RegisterUserDto dto);
         Task<bool> DeleteUserAsync(int id);
     }
 }

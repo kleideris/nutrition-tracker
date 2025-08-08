@@ -7,7 +7,7 @@ namespace NutritionTracker.Api.Services
     {
         Task<FoodItem?> GetFoodItemByIdAsync(int id);
         Task<List<FoodItem?>> GetAllFoodItemsAsync();
-        Task<bool> AddFoodItemAsync(FoodItemDTO dto);
+        Task<bool> AddFoodItemAsync(FoodItemDto dto);
 
         
 

@@ -1,13 +1,15 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NutritionTracker.Api.Core.Enums;
 using NutritionTracker.Api.Data;
 using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.Exceptions;
 using NutritionTracker.Api.Repositories;
 using Serilog;
 
 namespace NutritionTracker.Api.Services
 {
-    public class MealService : IMealService
+    public class MealService /*: IMealService*/
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -21,9 +23,8 @@ namespace NutritionTracker.Api.Services
         }
 
 
-
-        //Finished (Adds meal but need to make it so you can only add 1 type of meal per day...)
-        public async Task<bool> AddMealAsync(MealType mealType, MealPostDTO dto)
+        //Finished(Adds meal but need to make it so you can only add 1 type of meal per day...)
+        public async Task<Meal?> AddMealAsync(MealType mealType, MealPostDto dto)
         {
             Meal? meal = _mapper.Map<Meal>(dto);
             meal.MealType = mealType;
@@ -31,14 +32,14 @@ namespace NutritionTracker.Api.Services
             if (meal == null)
             {
                 _logger.LogWarning("Meal mapping failed for DTO: {@dto}", dto);
-                return false;
+                return null;
             }
             try
             {
                 await _unitOfWork.MealRepository.AddMealAsync(meal);
-                _logger.LogInformation("Meal: {meal} added successfully", meal);  //TODO: check if this needs ToString to work
                 await _unitOfWork.SaveAsync();
-                return true;
+                _logger.LogInformation("Meal: {meal} added successfully", meal);  //TODO: check if this needs ToString to work
+                return meal;
             }
             catch (Exception ex)
             {
