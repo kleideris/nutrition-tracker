@@ -10,7 +10,7 @@ namespace NutritionTracker.Api.Controllers
     /// Handles login requests and issues JWT tokens for authenticated users.
     /// </summary>
     /// 
-    [Route("auth")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController(IApplicationService applicationService, IConfiguration configuration,
         IMapper mapper) : BaseController(applicationService)

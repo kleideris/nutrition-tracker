@@ -7,23 +7,28 @@ using NutritionTracker.Api.Services;
 
 namespace NutritionTracker.Api.Controllers
 {
-    public class FoodItemController : BaseController
+    /// <summary>
+    /// Controller for managing food items in the nutrition tracker.
+    /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="FoodItemController"/>.
+    /// </remarks>
+    [Route("fooditems/")]
+    [ApiController]
+    public class FoodItemController(IApplicationService applicationService, IConfiguration configuration,
+        IMapper mapper) : BaseController(applicationService)
     {
-        private readonly IConfiguration _configuration;
-        private readonly IMapper _mapper;
-
-        public FoodItemController(IApplicationService applicationService, IConfiguration configuration,
-            IMapper mapper) : base(applicationService)
-        {
-            _configuration = configuration;
-            _mapper = mapper;
-        }
+        private readonly IConfiguration _configuration = configuration;
+        private readonly IMapper _mapper = mapper;
 
 
-
-        //Finished
+        /// <summary>
+        /// Adds a new food item to the tracker.
+        /// </summary>
+        /// <param name="dto">The food item data transfer object.</param>
+        /// <returns>Returns a success or failure message.</returns>
         [HttpPost]
-        public async Task<IActionResult> AddFoodItem(FoodItemDTO dto)
+        public async Task<IActionResult> AddFoodItem(FoodItemDto dto)
         {
             bool success = await _applicationService.FoodItemService.AddFoodItemAsync(dto);
 
@@ -40,35 +45,43 @@ namespace NutritionTracker.Api.Controllers
             return Ok(new { message = "food item logged successfully" });
         }
 
-
-        //Finished
-        [HttpGet("{id}")]
+        /// <summary>
+        /// Retrieves a food item by its unique ID.
+        /// </summary>
+        /// <param name="id">The ID of the food item.</param>
+        /// <returns>The food item DTO if found.</returns>
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetFoodItemById(int id)
         {
             FoodItem foodItem = await _applicationService.FoodItemService.GetFoodItemByIdAsync(id) ?? throw new EntityNotFoundException("FoodItem", "FoodItem: " + id + " NotFound");
-            var returnedDto = _mapper.Map<FoodItemDTO>(foodItem);
+            var returnedDto = _mapper.Map<FoodItemDto>(foodItem);
             return Ok(returnedDto);
         }
 
-
-        //Finished
-        [HttpGet("{name}")]
-        public async Task<IActionResult> GetFoodItemByName(string name)
+        /// <summary>
+        /// Retrieves a food item by its name.
+        /// </summary>
+        /// <param name="name">The name of the food item.</param>
+        /// <returns>The food item DTO if found.</returns>
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetByName(string name)
         {
-            FoodItem foodItem = await _applicationService.FoodItemService.GetFoodItemByNameAsync(name) ?? throw new EntityNotFoundException("FoodItem", "FoodItem: " + name + " NotFound");
-            var returnedDto = _mapper.Map<FoodItemDTO>(foodItem);
+            FoodItem? foodItem = await _applicationService.FoodItemService.GetByNameAsync(name);
+
+            var returnedDto = _mapper.Map<FoodItemDto>(foodItem);
             return Ok(returnedDto);
         }
 
-
-        //Finished
-        [HttpGet]
+        /// <summary>
+        /// Retrieves all food items in the tracker.
+        /// </summary>
+        /// <returns>A list of food item DTOs.</returns>
+        [HttpGet("all")]
         public async Task<IActionResult> GetAllFoodItems()
         {
             List<FoodItem?> foodItems = await _applicationService.FoodItemService.GetAllFoodItemsAsync();
-            var returnedDtos = foodItems.Select(f => _mapper.Map<FoodItemDTO>(f)).ToList();
+            var returnedDtos = foodItems.Select(f => _mapper.Map<FoodItemDto>(f)).ToList();
             return Ok(returnedDtos);
-
         }
     }
 }
