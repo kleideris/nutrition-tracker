@@ -22,7 +22,8 @@ namespace NutritionTracker.Api.Configuration
             CreateMap<NutritionDataDto, NutritionData>().ReverseMap();
             CreateMap<UpdateUserDto, User>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
-            CreateMap<User, UpdateUserDto>();
+            CreateMap<User, UpdateUserDto>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
 
         }

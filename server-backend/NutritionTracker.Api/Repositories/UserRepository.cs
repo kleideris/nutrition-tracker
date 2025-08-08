@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Humanizer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using NutritionTracker.Api.Data;
 using NutritionTracker.Api.Security;
 using System.Linq.Expressions;
@@ -12,8 +14,6 @@ namespace NutritionTracker.Api.Repositories
         }
 
 
-
-        //Finished
         public async Task<User?> AuthenticateUserAsync(string usernameOrEmail, string password)
         {
             var user = await context.Users
@@ -28,10 +28,9 @@ namespace NutritionTracker.Api.Repositories
         }
 
 
-        //Finished
         // By using Expression<Func<User, bool>> Instead of Func<User, bool> we allows Entity Framework to parse and convert
         // the filters into SQL queries. Otherwise because it cant translate the func delegates
-        // int sql queries, it would load everthing in memory and filter them there.
+        // into sql queries, it would load everthing in memory and filter them there.
         public async Task<List<User>> GetAllUsersFilteredPaginatedAsync(int pageNumber, int pageSize,
             Expression<Func<User, bool>> predicates)
         {
@@ -49,12 +48,9 @@ namespace NutritionTracker.Api.Repositories
         }
 
         
-        //Finished
-        public async Task<User?> GetUserByUsernameAsync(string username) => 
-            await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        public async Task<User?> GetUserByUsernameAsync(string username) =>  await context.Users.FirstOrDefaultAsync(u => u.Username == username);
 
 
-        //Finished
         public async Task<User?> UpdateUserAsync(int id, User user)
         {
             var existingUser = await context.Users.FindAsync(id);
@@ -68,5 +64,7 @@ namespace NutritionTracker.Api.Repositories
 
             return existingUser;
         }
+
+        public async Task<bool> EmailExistsAsync(string? email) => await context.Users.AnyAsync(u => u.Email == email);
     }
 }
