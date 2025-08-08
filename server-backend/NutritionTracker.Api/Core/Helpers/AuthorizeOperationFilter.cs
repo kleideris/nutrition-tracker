@@ -24,7 +24,11 @@ namespace NutritionTracker.Api.Core.Helpers
                 var roles = context.MethodInfo
                         .GetCustomAttributes(true)
                         .OfType<AuthorizeAttribute>()
-                        .SelectMany(attr => attr.Roles!.Split(','));
+                        .SelectMany(attr => 
+                            string.IsNullOrEmpty(attr.Roles) 
+                                ? Enumerable.Empty<string>() 
+                                : attr.Roles.Split(','));
+
 
                 operation.Security.Add(new OpenApiSecurityRequirement
                 {
