@@ -54,7 +54,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
   };
 
   const logoutUser = () => {
-    deleteCookie("access_name");
+    deleteCookie("access_token");
     setAccessToken(null);
     setUserId(null);
   };
