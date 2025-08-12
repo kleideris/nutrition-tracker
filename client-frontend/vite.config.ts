@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import dotenv from 'dotenv';
-
+import path from 'path';
 
 console.log("Using port:", process.env.PORT);
 
@@ -15,6 +15,11 @@ export default defineConfig({
     react(), 
     tailwindcss()
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
   server: {
     // open: true, // This opens the browser automatically
     port: parseInt(process.env.PORT ?? '5173'), // This sets the frontend port from the .env
