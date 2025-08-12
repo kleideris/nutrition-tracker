@@ -6,7 +6,7 @@ namespace NutritionTracker.Api.DTO
     {
         [Required(ErrorMessage = "Username is required")]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Username must be between 2 and 50 characters.")]
-        public string? UsernameOrEmail { get; set; }
+        public string? Username { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
         [RegularExpression(@"(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?\W)^.{8,}$", 

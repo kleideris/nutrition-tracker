@@ -35,8 +35,8 @@ namespace NutritionTracker.Api.Services
 
         public async Task<User?> VerifyAndGetAsync(LoginUserDto credentials)
         {
-            var user = await _unitOfWork.UserRepository.AuthenticateUserAsync(credentials.UsernameOrEmail!, credentials.Password!) ??
-                throw new EntityNotFoundException("User", "User with username: " + credentials.UsernameOrEmail + " could not be found");
+            var user = await _unitOfWork.UserRepository.AuthenticateUserAsync(credentials.Username!, credentials.Password!) ??
+                throw new EntityNotFoundException("User", "User with username: " + credentials.Username + " could not be found");
 
             _logger.LogInformation("User Found, Authenticated and returned: {UserId}", user.Id);
 

@@ -30,7 +30,7 @@ namespace NutritionTracker.Api.Controllers
         /// Thrown when username or password is invalid.
         /// </exception>
         /// 
-        [HttpPost("login")]
+        [HttpPost("login/access-token")]
         public async Task<ActionResult<JwtTokenDto>> Login([FromBody] LoginUserDto credentials)
         {
             var user = await _applicationService.UserService.VerifyAndGetAsync(credentials) ??
@@ -39,9 +39,13 @@ namespace NutritionTracker.Api.Controllers
             var userToken = _applicationService.AuthService
                 .CreateUserToken(user.Id, user.Username!, user.Email!, user.UserRole, _configuration["Authentication:SecretKey"]!);
 
-            JwtTokenDto token = new() { Token = userToken };
+            JwtTokenDto accessToken = new() 
+            { 
+                AccessToken = userToken,
+                TokenType = "Bearer"
+            };
 
-            return Ok(token);
+            return Ok(accessToken);
         }
     }
 }
