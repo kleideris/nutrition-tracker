@@ -13,7 +13,7 @@ namespace NutritionTracker.Api.Controllers
     /// <remarks>
     /// Initializes a new instance of the <see cref="FoodItemController"/>.
     /// </remarks>
-    [Route("fooditems/")]
+    [Route("api/food-items/")]
     [ApiController]
     public class FoodItemController(IApplicationService applicationService, IConfiguration configuration,
         IMapper mapper) : BaseController(applicationService)
@@ -70,6 +70,15 @@ namespace NutritionTracker.Api.Controllers
 
             var returnedDto = _mapper.Map<FoodItemDto>(foodItem);
             return Ok(returnedDto);
+        }
+
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchFoodItems([FromQuery] string query)
+        {
+            var matches = await _applicationService.FoodItemService.SearchByNameAsync(query);
+            var returnedDtos = matches.Select(f => _mapper.Map<FoodItemDto>(f)).ToList();
+            return Ok(returnedDtos);
         }
 
         /// <summary>

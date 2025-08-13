@@ -24,5 +24,15 @@ namespace NutritionTracker.Api.Repositories
         //Finished
         public async Task<FoodItem?> GetByNameAsync(string name) => 
             await context.FoodItems.Include(f => f.NutritionData).FirstOrDefaultAsync(f => f.Name == name);
+
+
+
+        public async Task<List<FoodItem>> SearchByNameAsync(string query)
+        {
+            return await context.FoodItems
+                .Include(f => f.NutritionData)
+                .Where(f => f.Name.Contains(query))
+                .ToListAsync();
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using NutritionTracker.Api.Data;
 using NutritionTracker.Api.DTO;
 using NutritionTracker.Api.Exceptions;
@@ -84,6 +85,13 @@ namespace NutritionTracker.Api.Services
                     throw new EntityNotFoundException("FoodItem", "Food item with name " + name + " was not found");
                 }
                 return foodItem;
+        }
+
+
+        public async Task<List<FoodItem>> SearchByNameAsync(string query)
+        {
+            var matches = await _unitOfWork.FoodItemRepository.SearchByNameAsync(query);
+            return matches;
         }
     }
 }
