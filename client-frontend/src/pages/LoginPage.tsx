@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button.tsx"
 import { Label } from "@/components/ui/label.tsx"
 import { useAuth } from "../hooks/useAuth"
 import { toast } from "sonner"
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 
 export default function LoginPage() {
   const { loginUser } = useAuth();
@@ -63,11 +63,16 @@ export default function LoginPage() {
             <div className="text-red-600">{errors.password.message}</div>
           )}
         </div>
-
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Logging ..." : "Login"}
         </Button>
       </form>
+      <div className="text-center text-sm p-4 text-gray-600">
+        Don't have an account?{" "}
+        <Link to="/register" className="text-blue-600 hover:underline">
+          Create one
+        </Link>
+      </div>
     </>
   )
 }
