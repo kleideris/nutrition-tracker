@@ -5,14 +5,24 @@ import {login, type LoginFields } from "../api/login";
 import { AuthContext } from "./AuthContext";
 
 type JwtPayload = {
-  email?: string;
-  user_id?: string;
+  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"?: string;
+  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"?: string;
+  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"?: string;
+  "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"?: string;
+};
+
+export type User = {
+  id: string;
+  username: string;
+  email: string;
+  role: string;
 };
 
 export const AuthProvider = ({children}: {children: ReactNode}) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  
 
   useEffect(() => {
     const token = getCookie("access_token");
@@ -22,13 +32,19 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
       try {
         const decoded = jwtDecode<JwtPayload>(token)
         console.log(decoded);  // <--- testing if decoded was successfull
-        setUserId(decoded.user_id ?? null)
-
+        const user: User = {
+          id: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ?? "",
+          username: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] ?? "",
+          email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] ?? "",
+          role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ?? ""
+        };
+        
+        setUser(user)
       } catch {
-        setUserId(null);
+        setUser(null);
       } 
     } else {
-        setUserId(null);
+        setUser(null);
     }
     setLoading(false);
   }, [])
@@ -47,28 +63,35 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
 
     try {
       const decoded = jwtDecode<JwtPayload>(res.access_token);
-      setUserId(decoded.user_id ?? null);
+      const user: User = {
+        id: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ?? "",
+        username: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] ?? "",
+        email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] ?? "",
+        role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ?? ""
+      };
+
+      setUser(user);
     } catch {
-      setUserId(null);
+      setUser(null);
     }
   };
 
   const logoutUser = () => {
     deleteCookie("access_token");
     setAccessToken(null);
-    setUserId(null);
+    setUser(null);
   };
 
   return(
     <AuthContext.Provider
-    value = {{
-      isAuthenticated: !!accessToken,
-      accessToken,
-      userId,
-      loginUser,
-      logoutUser,
-      loading
-    }}
+      value={{
+        isAuthenticated: !!accessToken,
+        accessToken,
+        user,
+        loginUser,
+        logoutUser,
+        loading
+      }}
     >
       {loading ? null : children}
     </AuthContext.Provider>
