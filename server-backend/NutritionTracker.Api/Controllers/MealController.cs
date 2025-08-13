@@ -16,7 +16,7 @@ namespace NutritionTracker.Api.Controllers
         private readonly IMapper _mapper = mapper;
 
 
-        [HttpPost("mealtype/{mealType}")]
+        [HttpPost("meal-type/{mealType}")]
         public async Task<IActionResult> AddMeal(MealType mealType, [FromBody] MealPostDto dto)
         {
             var existingMeals = await _applicationService.MealService.GetMealsByUserAsync(dto.UserId);
@@ -83,7 +83,7 @@ namespace NutritionTracker.Api.Controllers
 
 
         //Finished with minor bugs
-        [HttpGet("userid/{userId}")]
+        [HttpGet("user-id/{userId}")]
         public async Task<IActionResult> GetMealsByUser(int userId)
         {
             var meals = await _applicationService.MealService.GetMealsByUserAsync(userId) ?? throw new EntityNotFoundException("Meal", "Meal: " + userId + " NotFound");

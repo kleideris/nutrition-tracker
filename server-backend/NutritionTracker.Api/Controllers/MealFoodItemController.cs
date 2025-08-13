@@ -5,7 +5,7 @@ using NutritionTracker.Api.Services;
 
 namespace NutritionTracker.Api.Controllers
 {
-    [Route("api/meals/{mealId}/fooditems")]
+    [Route("api/meals/{mealId}/food-items")]
     [ApiController]
     public class MealFoodItemController(IApplicationService applicationService, IConfiguration configuration,
         IMapper mapper) : BaseController(applicationService)
