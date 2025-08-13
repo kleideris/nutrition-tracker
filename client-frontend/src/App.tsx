@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import { Toaster } from 'sonner';
 import NotFoundPage from './pages/NotFoundPage';
+import { PublicRoute } from './components/PublicRoute';
 
 
 const App = () => {
@@ -19,7 +20,7 @@ const App = () => {
             <Routes>
               <Route element={<Layout />}>
                 <Route index element={<HomePage/>} />
-                <Route path="/login" element={<LoginPage />} />
+                <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
 
                 <Route path="/dashboard" element={<ProtectedRoute />}>
                   <Route index element={<DashboardPage />} />

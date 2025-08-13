@@ -24,7 +24,7 @@ export default function LoginPage() {
     try {
       await loginUser(data);
       toast.success("Login successfully");
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });  // replaces login in history so you cant backtrack.
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Login failed");
     }

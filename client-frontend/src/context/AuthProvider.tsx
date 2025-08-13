@@ -21,7 +21,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
     if (token) {
       try {
         const decoded = jwtDecode<JwtPayload>(token)
-        console.log(decoded);  // testing if decoded was successfull
+        console.log(decoded);  // <--- testing if decoded was successfull
         setUserId(decoded.user_id ?? null)
 
       } catch {
@@ -35,7 +35,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
 
   const loginUser = async (fields: LoginFields) => {
     const res = await login(fields);
-    // console.log("Login response:", res);  // Checks login response in the console
+    // console.log("Login response:", res);  // <--- testing login response in the console
     setCookie("access_token", res.access_token, {
       expires: 1,
       sameSite: "Lax",
