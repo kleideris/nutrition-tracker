@@ -15,6 +15,12 @@ const Header = () => {
           >
             Home
           </Link>
+          <Link
+            to="dashboard"
+            className="block md:inline hover:underline hover:underline-offset-4 p-4 md:p-1"
+          >
+            Dashboard
+          </Link>
           <AuthButton/>
         </nav>
       </div>

@@ -20,7 +20,7 @@ export type LoginResponse = {
 export async function login({username, password}: LoginFields): Promise<LoginResponse> {
 
   const res = await fetch(
-    import.meta.env.VITE_API_URL + "api/auth/login/access-token",
+    import.meta.env.VITE_API_URL + "/auth/login/access-token",
     {
       method: "POST",
       headers: {"Content-Type": "application/json"},
