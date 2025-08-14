@@ -12,6 +12,7 @@ import LogMealForm from './components/LogMealForm';
 import MealList from './components/MealList';
 import UserProfile from './components/UserProfile';
 import RegisterPage from './pages/RegisterPage';
+import FoodItemsPage from './pages/FoodItemsPage';
 
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
                     <Route path="log-meal" element={<LogMealForm />} />
                     <Route path="my-meals" element={<MealList />} />
                     <Route path="profile" element={<UserProfile />} />
+                    <Route path="food-items" element={<FoodItemsPage />} />
                   <Route/>
 
                 </Route>
