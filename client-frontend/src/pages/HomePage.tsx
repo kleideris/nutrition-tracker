@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 const HomePage = () => {
   useEffect(() => {
-    document.title = "CNutrition Tracker Homepage";
+    document.title = "Nutrition Tracker Homepage";
   }, []);
 
   return (

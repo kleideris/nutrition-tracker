@@ -55,7 +55,7 @@ export default function LoginPage() {
           <Input
             id="password"
             type="password"
-            autoFocus
+            // autoFocus
             {...register("password")}
             disabled={isSubmitting}
           />

@@ -55,14 +55,14 @@ export default function LogMealForm() {
 
     if (!res.ok) {
       const error = await res.json();
-      toast.error(`❌ ${error.message || "Failed to log meal."}`);
+      toast.error(`${error.message || "Failed to log meal."}`);
       return;
     }
 
-    toast.success("✅ Meal logged successfully!");
+    toast.success("Meal logged successfully!");
     setSelectedFoodItems([]);
   } catch {
-    toast.error("❌ Network error while logging meal.");
+    toast.error("Network error while logging meal.");
   }
 };
 

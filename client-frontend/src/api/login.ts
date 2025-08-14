@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { z } from "zod"
 
 export const LoginSchema = z.object({
@@ -18,9 +19,15 @@ export type LoginResponse = {
 };
 
 export async function login({username, password}: LoginFields): Promise<LoginResponse> {
+  const apiUrl = import.meta.env.VITE_API_URL;
+  if (!apiUrl) {
+    toast.error("API URL is not configured.");
+    throw new Error("Login failed");
 
+  }
+  
   const res = await fetch(
-    import.meta.env.VITE_API_URL + "/auth/login/access-token",
+    `${apiUrl}/auth/login/access-token`,
     {
       method: "POST",
       headers: {"Content-Type": "application/json"},
