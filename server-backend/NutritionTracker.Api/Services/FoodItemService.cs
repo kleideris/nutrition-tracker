@@ -54,7 +54,7 @@ namespace NutritionTracker.Api.Services
 
 
         //Finished
-        public async Task<List<FoodItem?>> GetAllFoodItemsAsync() => await _unitOfWork.FoodItemRepository.GetAllAsListAsync();
+        public async Task<List<FoodItem>> GetAllFoodItemsAsync() => await _unitOfWork.FoodItemRepository.GetAllAsListAsync();
 
 
         //Finished
