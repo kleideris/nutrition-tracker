@@ -10,10 +10,6 @@ namespace NutritionTracker.Api.Data
         // Foreign key linking this meal to a specific user.
         public int UserId { get; set; }
 
-        // Optional name given by users to personalize meals (e.g., "My Salad").
-        // Useful for bookmarking or favoriting recurring meal setups.
-        // public string? MealName { get; set; }
-
         // Categorizes the type of meal (e.g., Breakfast, Snack, Dinner).
         // Enables grouped analytics and filtering (e.g., analyze all snacks).
         public MealType MealType { get; set; }

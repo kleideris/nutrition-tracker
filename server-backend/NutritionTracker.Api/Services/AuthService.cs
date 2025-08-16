@@ -11,6 +11,7 @@ namespace NutritionTracker.Api.Services
     /// <summary>
     /// Provides authentication-related services such as JWT token generation.
     /// </summary>
+    /// 
     public class AuthService : IAuthService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -35,7 +36,7 @@ namespace NutritionTracker.Api.Services
         /// The token includes claims for username, user ID, email, and role.
         /// The issuer and audience are set to example URLs; use <c>null</c> if not needed.
         /// </remarks>
-
+        /// 
         public string CreateUserToken(int userId, string username, string email,
                 UserRole userRole, string appSecurityKey)
         {

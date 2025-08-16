@@ -7,12 +7,8 @@ using System.Linq.Expressions;
 
 namespace NutritionTracker.Api.Repositories
 {
-    public class UserRepository : BaseRepository<User>, IUserRepository
+    public class UserRepository(AppDBContext context) : BaseRepository<User>(context), IUserRepository
     {
-        public UserRepository(AppDBContext context) : base(context)
-        {
-        }
-
 
         public async Task<User?> AuthenticateUserAsync(string usernameOrEmail, string password)
         {
@@ -64,6 +60,7 @@ namespace NutritionTracker.Api.Repositories
 
             return existingUser;
         }
+
 
         public async Task<bool> EmailExistsAsync(string? email) => await context.Users.AnyAsync(u => u.Email == email);
     }

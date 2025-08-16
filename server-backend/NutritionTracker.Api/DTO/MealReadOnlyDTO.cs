@@ -6,7 +6,13 @@ namespace NutritionTracker.Api.DTO
     {
         public MealType MealType { get; set; }
         public DateTime Timestamp { get; set; }
-        public List<MealFoodItemDto> FoodItems { get; set; } = new();
+        public List<MealFoodItemDto> FoodItems { get; set; } = [];
+
+        // Aggregated nutrition
+        public float TotalCalories { get; set; }
+        public float TotalProtein { get; set; }
+        public float TotalCarbs { get; set; }
+        public float TotalFats { get; set; }
 
     }
 }

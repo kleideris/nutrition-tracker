@@ -16,7 +16,7 @@
 
         // The unit used to measure the food (e.g., "pieces", "cups", "kg").
         // Defaults to "grams".
-        public string UnitOfMeasurement { get; set; } = "grams";
+        public string? UnitOfMeasurement { get; set; } = "grams";
 
         // Navigation property for the linked meal.
         // Each MealFoodItem entry belongs to exactly one meal.

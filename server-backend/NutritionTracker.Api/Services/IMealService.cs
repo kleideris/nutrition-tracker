@@ -8,7 +8,7 @@ namespace NutritionTracker.Api.Services
     {
         Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId);
         Task<Meal?> GetMealByIdAsync(int mealId);
-        Task<bool> AddMealAsync(MealType mealType, MealPostDto dto);
+        Task<bool> AddMealAsync(MealType mealType, AddMealDto dto);
 
 
         //Task<IEnumerable<Meal>> GetMealsByDateRangeAsync(int UserId, DateTime startDate, DateTime endDate);

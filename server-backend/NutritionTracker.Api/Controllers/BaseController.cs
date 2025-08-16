@@ -18,6 +18,7 @@ namespace NutritionTracker.Api.Controllers
         public readonly IApplicationService _applicationService;
         private ApplicationUser? _appUser;  // this is used to cache the result of parsing the claims
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseController"/> class.
         /// </summary>
@@ -56,6 +57,7 @@ namespace NutritionTracker.Api.Controllers
 
                     return _appUser;
                 }
+
                 return null;
             }
         }

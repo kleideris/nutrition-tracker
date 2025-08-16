@@ -101,7 +101,6 @@ namespace NutritionTracker.Api.Controllers
         }
 
 
-
         /// <summary>
         /// Retrieves a user by their unique identifier.
         /// </summary>

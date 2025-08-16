@@ -3,20 +3,12 @@ using NutritionTracker.Api.Data;
 
 namespace NutritionTracker.Api.Repositories
 {
-    public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
+    public abstract class BaseRepository<T>(AppDBContext context) : IBaseRepository<T> where T : class
     {
-        protected readonly AppDBContext context;  // The EF database context injected via constructor
-        protected readonly DbSet<T> dbset;  // Generic DbSet for accessing entities of type T
-
-        // Constructor: Injects the AppDBContext and initializes the DbSet<T>
-        public BaseRepository(AppDBContext context)
-        {
-            this.context = context;
-            dbset = context.Set<T>();  // dynamically retrieves Dbset (of the entity thats refferenced)
-        }
+        protected readonly AppDBContext context = context;  // The EF database context injected via constructor
+        protected readonly DbSet<T> dbset = context.Set<T>();  // Generic DbSet for accessing entities of type T
 
 
-        
         public virtual async Task AddAsync(T entity) => await dbset.AddAsync(entity);
 
 
