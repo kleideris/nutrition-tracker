@@ -4,6 +4,7 @@ namespace NutritionTracker.Api.DTO
 {
     public class FoodItemDto
     {
+        public int Id { get; set; }
         public string Name { get; set; } = null!;
         public virtual NutritionDataDto NutritionData { get; set; } = null!;
     }

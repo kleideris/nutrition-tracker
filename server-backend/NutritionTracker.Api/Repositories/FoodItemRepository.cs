@@ -3,36 +3,28 @@ using NutritionTracker.Api.Data;
 
 namespace NutritionTracker.Api.Repositories
 {
-    public class FoodItemRepository : BaseRepository<FoodItem>, IFoodItemRepository
-    { 
-        public FoodItemRepository(AppDBContext context) : base(context)
-        {
-        }
+    public class FoodItemRepository(AppDBContext context) : BaseRepository<FoodItem>(context), IFoodItemRepository
+    {
 
-
-
-        //Finished
         public override async Task<FoodItem?> GetAsync(int id) => 
             await dbset.Include(f => f.NutritionData).FirstOrDefaultAsync(f => f.Id == id);
 
 
-        //Finished
         public async Task<List<FoodItem>> GetAllAsListAsync() => 
-            await dbset.Include(f => f.NutritionData).ToListAsync();
+            await dbset.Include(f => f.NutritionData)
+                .OrderBy(f => f.Name)
+                .ToListAsync();
 
 
-        //Finished
         public async Task<FoodItem?> GetByNameAsync(string name) => 
             await context.FoodItems.Include(f => f.NutritionData).FirstOrDefaultAsync(f => f.Name == name);
 
 
-
-        public async Task<List<FoodItem>> SearchByNameAsync(string query)
-        {
-            return await context.FoodItems
+        public async Task<List<FoodItem>> SearchByNameAsync(string query) =>
+            await context.FoodItems
                 .Include(f => f.NutritionData)
                 .Where(f => f.Name.Contains(query))
+                .OrderBy(f => f.Name)
                 .ToListAsync();
-        }
     }
 }

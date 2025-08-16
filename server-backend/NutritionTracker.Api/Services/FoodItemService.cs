@@ -8,22 +8,25 @@ using Serilog;
 
 namespace NutritionTracker.Api.Services
 {
-    public class FoodItemService : IFoodItemService
+    /// <summary>
+    /// Service class for managing food items, including creation, deletion, retrieval, and search operations.
+    /// </summary>
+    /// 
+    public class FoodItemService(IUnitOfWork unitOfWork, IMapper mapper) /*: IFoodItemService */
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly ILogger<FoodItemService> _logger;
-
-        public FoodItemService(IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _logger = new LoggerFactory().AddSerilog().CreateLogger<FoodItemService>();  // creates the Logger for food item service using a factory method
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
+        private readonly ILogger<FoodItemService> _logger = new LoggerFactory().AddSerilog().CreateLogger<FoodItemService>();
 
 
-        //Finished
-        public async Task<bool> AddFoodItemAsync(FoodItemDto dto)
+        /// <summary>
+        /// Adds a new food item to the database.
+        /// </summary>
+        /// <param name="dto">The data transfer object containing food item details.</param>
+        /// <returns>True if the item was added successfully; otherwise, false.</returns>
+        /// <exception cref="EntityAlreadyExistsException">Thrown if a food item with the same name already exists.</exception>
+        /// 
+        public async Task<bool> AddAsync(FoodItemDto dto)
         {
             FoodItem foodItem = _mapper.Map<FoodItem>(dto);
             if (foodItem == null)
@@ -53,45 +56,44 @@ namespace NutritionTracker.Api.Services
         }
 
 
-        //Finished
-        public async Task<List<FoodItem>> GetAllFoodItemsAsync() => await _unitOfWork.FoodItemRepository.GetAllAsListAsync();
-
-
-        //Finished
-        public async Task<FoodItem?> GetFoodItemByIdAsync(int id)
+        /// <summary>
+        /// Deletes a food item by its unique identifier.
+        /// </summary>
+        /// <param name="id">The ID of the food item to delete.</param>
+        /// <returns>True if the item was deleted successfully; otherwise, false.</returns>
+        /// 
+        public async Task<bool> DeleteAsync(int id)
         {
-            try
+            var deleted = await _unitOfWork.FoodItemRepository.DeleteAsync(id);
+            if (deleted)
             {
-                FoodItem? foodItem = await _unitOfWork.FoodItemRepository.GetAsync(id);
-                if (foodItem == null)
-                {
-                    throw new EntityNotFoundException("FoodItem", "Food item with id " + id + " was not found");
-                }
-                return foodItem;
+                await _unitOfWork.SaveAsync();
+
+                _logger.LogInformation("Deleted FoodItem: {id}", id);
+                return true;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message}{Exception}", ex.Message, ex.StackTrace);
-                throw;
-            }
+            return false;
         }
 
 
-        public async Task<FoodItem?> GetByNameAsync(string name)
-        {
-                FoodItem? foodItem = await _unitOfWork.FoodItemRepository.GetByNameAsync(name);
-                if (foodItem == null)
-                {
-                    throw new EntityNotFoundException("FoodItem", "Food item with name " + name + " was not found");
-                }
-                return foodItem;
-        }
-
-
+        /// <summary>
+        /// Searches for food items by name using a partial match.
+        /// </summary>
+        /// <param name="query">The search query string.</param>
+        /// <returns>A list of food items whose names match the query.</returns>
+        /// 
         public async Task<List<FoodItem>> SearchByNameAsync(string query)
         {
             var matches = await _unitOfWork.FoodItemRepository.SearchByNameAsync(query);
             return matches;
         }
+
+
+        /// <summary>
+        /// Retrieves all food items from the database.
+        /// </summary>
+        /// <returns>A list of all food items.</returns>
+        /// 
+        public async Task<List<FoodItem>> GetAllAsync() => await _unitOfWork.FoodItemRepository.GetAllAsListAsync();
     }
 }
