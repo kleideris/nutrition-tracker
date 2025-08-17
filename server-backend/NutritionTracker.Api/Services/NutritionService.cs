@@ -8,18 +8,13 @@ using Serilog;
 
 namespace NutritionTracker.Api.Services
 {
-    public class NutritionService(IUnitOfWork unitOfWork, IMapper mapper) : INutritonService
+    public class NutritionService : INutritonService
     {
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IMapper _mapper = mapper;
-        private readonly ILogger<UserService> _logger = new LoggerFactory().AddSerilog().CreateLogger<UserService>();
 
 
         public MealNutritionDto CalculateNutrition(Meal meal)
         {
-            var items = meal.MealFoodItems
-                            .Select(CalculateNutriton)
-                            .ToList();
+            var items = meal.MealFoodItems.Select(CalculateNutriton).ToList();
 
             var totalCalories = items.Sum(i => i.Calories);
             var totalProtein = items.Sum(i => i.Protein);
