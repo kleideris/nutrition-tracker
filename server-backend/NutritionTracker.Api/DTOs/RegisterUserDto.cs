@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NutritionTracker.Api.DTO
+namespace NutritionTracker.Api.DTOs
 {
     public class RegisterUserDto
     {

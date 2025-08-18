@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
-namespace NutritionTracker.Api.DTO
+namespace NutritionTracker.Api.DTOs
 {
     public class JwtTokenDto
     {

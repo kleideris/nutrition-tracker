@@ -1,4 +1,4 @@
-﻿namespace NutritionTracker.Api.DTO
+﻿namespace NutritionTracker.Api.DTOs
 {
     public class AddMealFoodItemDto
     {

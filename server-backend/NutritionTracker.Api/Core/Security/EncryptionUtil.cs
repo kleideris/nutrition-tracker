@@ -1,14 +1,23 @@
-﻿namespace NutritionTracker.Api.Security
+﻿namespace NutritionTracker.Api.Core.Security
 {
     public static class EncryptionUtil
     {
-        // Encrypts the plain text using BCrypt hashing algorithm
+        /// <summary>
+        /// Encrypts the plain text using BCrypt hashing algorithm
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <returns></returns>
         public static string EncryptPassword(string plainText)
         {
             return BCrypt.Net.BCrypt.HashPassword(plainText, workFactor: 12);
         }
 
-        // Verifies that a plain text matches the hashed cipher text
+        /// <summary>
+        /// Verifies that a plain text matches the hashed cipher text
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <param name="cipherText"></param>
+        /// <returns></returns>
         public static bool IsValidPassword(string plainText, string cipherText)
         {
             return BCrypt.Net.BCrypt.Verify(plainText, cipherText);

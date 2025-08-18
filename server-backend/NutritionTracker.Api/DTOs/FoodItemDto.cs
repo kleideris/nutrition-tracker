@@ -1,6 +1,6 @@
 ﻿using NutritionTracker.Api.Data;
 
-namespace NutritionTracker.Api.DTO
+namespace NutritionTracker.Api.DTOs
 {
     public class FoodItemDto
     {

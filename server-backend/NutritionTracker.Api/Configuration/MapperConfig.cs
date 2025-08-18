@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using NutritionTracker.Api.Core.Security;
 using NutritionTracker.Api.Data;
-using NutritionTracker.Api.DTO;
-using NutritionTracker.Api.Security;
+using NutritionTracker.Api.DTOs;
 
 namespace NutritionTracker.Api.Configuration
 {

@@ -1,6 +1,6 @@
 ﻿using NutritionTracker.Api.Core.Enums;
 
-namespace NutritionTracker.Api.DTO
+namespace NutritionTracker.Api.DTOs
 {
     public class UserProfileDto
     {
