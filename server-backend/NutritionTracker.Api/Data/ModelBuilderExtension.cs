@@ -2,8 +2,15 @@
 
 namespace NutritionTracker.Api.Data
 {
+    /// <summary>
+    /// Provides extension method for configuring <see cref="ModelBuilder"/> behavior.
+    /// </summary>
     public static class ModelBuilderExtension
     {
+
+        /// <summary>
+        /// Adds default audit rules to all entities that inherit from <see cref="BaseEntity"/>.
+        /// </summary>
         public static void AddBaseEntityAuditRules(this ModelBuilder modelBuilder)
         {
             var entityTypes = modelBuilder.Model.GetEntityTypes()

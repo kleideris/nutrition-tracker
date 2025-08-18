@@ -2,18 +2,25 @@
 {
     public class FoodItem : BaseEntity
     {
-        // Primary key used to uniquely identify each food item in the database.
+        /// <summary>
+        /// Primary key used to uniquely identify each food item in the database.
+        /// </summary>
         public int Id { get; set; }
 
-        // The display name of the food item (e.g., "Banana", "Grilled Chicken Breast").
+        /// <summary>
+        /// The display name of the food item (e.g., "Banana", "Grilled Chicken Breast").
+        /// </summary>
         public string Name { get; set; } = null!;
 
-        // Navigation property to associated nutritional data for this food item.
+        /// <summary>
+        /// Navigation property to associated nutritional data for this food item.
+        /// </summary>
         public virtual NutritionData NutritionData { get; set; } = null!;
 
-        // Navigation property for meal associations.
-        // One-to-many: this food item can appear in multiple MealFoodItem join records.
-        // Useful for tracking how and where the food was consumed.
+        /// <summary>
+        /// Navigation property for meal associations.
+        /// One-to-many: this food item can appear in multiple MealFoodItem join records.
+        /// </summary>
         public virtual ICollection<MealFoodItem>? MealFoodItems { get; set; } = new HashSet<MealFoodItem>();
     }
 }
