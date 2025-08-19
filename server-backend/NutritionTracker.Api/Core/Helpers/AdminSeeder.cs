@@ -13,14 +13,20 @@ public static class AdminSeeder
             {
                 Username = "admin",
                 Email = "admin@email.com",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin"),
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin.94"),
+                //PasswordHash = "Admin.94",
                 Firstname = "ad",
                 Lastname = "min",
                 UserRole = NutritionTracker.Api.Core.Enums.UserRole.Admin
             };
 
             db.Users.Add(adminUser);
+            Console.WriteLine("👤 Admin user seeded successfully.");
             db.SaveChanges();
+        }
+        else
+        {
+            Console.WriteLine("ℹ️ Admin user already exists. Skipping seeding.");
         }
     }
 }
