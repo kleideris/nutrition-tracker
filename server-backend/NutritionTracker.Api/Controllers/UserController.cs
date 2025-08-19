@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NutritionTracker.Api.Core.Filters;
-using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.DTOs;
 using NutritionTracker.Api.Exceptions;
 using NutritionTracker.Api.Services;
 
@@ -12,7 +12,7 @@ namespace NutritionTracker.Api.Controllers
     /// Controller for managing users in the nutrition tracker
     /// </summary>
     /// 
-    [Route("/api/users/")]
+    [Route("api/users/")]
     [ApiController]
     public class UserController(IApplicationService applicationService, IConfiguration configuration,
         IMapper mapper) : BaseController(applicationService)
@@ -109,6 +109,7 @@ namespace NutritionTracker.Api.Controllers
         /// <exception cref="EntityNotFoundException">Thrown if no user with the specified <paramref name="id"/> exists.</exception>
         /// 
         [HttpGet("{id:int}")]
+        [Authorize]
         public async Task<ActionResult<UserReadOnlyDto>> GetById(int id)
         {
             var user = await _applicationService.UserService.GetByIdAsync(id) ?? throw new EntityNotFoundException("User", "User: " + id + " NotFound");
@@ -126,6 +127,7 @@ namespace NutritionTracker.Api.Controllers
         /// <exception cref="EntityNotFoundException">Thrown if no user with the specified <paramref name="username"/> exists.</exception>
         /// 
         [HttpGet("username")]
+        [Authorize]
         public async Task<ActionResult<UserReadOnlyDto>> GetByUsername([FromQuery] string username)
         {
             var user = await _applicationService.UserService.GetByUsernameAsync(username) ?? throw new EntityNotFoundException("User", "User: " + username + " NotFound");
@@ -148,6 +150,7 @@ namespace NutritionTracker.Api.Controllers
         /// response is returned as an HTTP 200 OK result with the list of users in the response body.</returns>
         /// 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetFilteredPaginated([FromQuery] UserFiltersDTO userFilterDTO, [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
         {

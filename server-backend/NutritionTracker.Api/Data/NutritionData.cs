@@ -37,7 +37,7 @@
         /// Indicates the weight in grams that defines one standard serving size for this food item.
         /// Used to scale nutrient values from a 100g base to real-world portions (e.g., 1 slice, 1 jar, 1 banana).
         /// </summary>
-        //public double ServingSizeGrams { get; set; }
+        public double ServingSizeGrams { get; set; }
 
         /// <summary>
         /// Navigation property for accessing the related food item from its nutritional profile.

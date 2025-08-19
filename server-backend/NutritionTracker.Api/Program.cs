@@ -64,6 +64,8 @@ namespace NutritionTracker.Api
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role", // 👈 Add this line
+
                     ValidateIssuer = false,
                     ValidIssuer = "https://codingfactory.aueb.gr",
 
@@ -164,11 +166,10 @@ namespace NutritionTracker.Api
 
 
             // Applies Global exception handler.
-            app.UseExceptionHandler(options => { } ); 
+            app.UseExceptionHandler(options => { } );
 
-            // Create initial admin if there isnt any in the db
-            //AdminSeeder.SeedInitialAdminAsync(app.Services).GetAwaiter().GetResult();
-
+            // Automatically create an admin on startup if there isnt any in the db
+            AdminSeeder.Seed(app.Services);
 
             // Initializes the db for docker.
             using (var scope = app.Services.CreateScope())
@@ -205,15 +206,6 @@ namespace NutritionTracker.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(/*c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "NutritionTracker API V1"); }*/);
             }
-
-
-            // Forces HTTPS for all requests when not in development
-            if (!app.Environment.IsDevelopment())
-            //{
-            //    app.UseHttpsRedirection();
-            //    // Configure Kestrel for HTTPS
-            //}
-
             
             // Redirects http requests to https
             app.UseHttpsRedirection();

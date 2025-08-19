@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NutritionTracker.Api.Data;
+using NutritionTracker.Api.Repositories.Interfaces;
 
 namespace NutritionTracker.Api.Repositories
 {

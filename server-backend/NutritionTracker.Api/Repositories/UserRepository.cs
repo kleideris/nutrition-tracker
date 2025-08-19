@@ -1,16 +1,28 @@
-﻿using Humanizer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+﻿using Microsoft.EntityFrameworkCore;
+using NutritionTracker.Api.Core.Security;
 using NutritionTracker.Api.Data;
-using NutritionTracker.Api.Security;
+using NutritionTracker.Api.Repositories.Interfaces;
 using System.Linq.Expressions;
 
 namespace NutritionTracker.Api.Repositories
 {
-    public class UserRepository(AppDBContext context) : BaseRepository<User>(context), IUserRepository
+    /// <summary>
+    /// Repository for performing data operations related to <see cref="User"/> entities.
+    /// </summary>
+    /// 
+    public class UserRepository(AppDBContext context) : BaseRepository<User>(context) , IUserRepository
     {
 
-        public async Task<User?> AuthenticateUserAsync(string usernameOrEmail, string password)
+        /// <summary>
+        /// Authenticates a user by verifying their username/email and password.
+        /// </summary>
+        /// <param name="usernameOrEmail">The username or email of the user.</param>
+        /// <param name="password">The plaintext password to validate.</param>
+        /// <returns>
+        /// A <see cref="User"/> object if authentication is successful; otherwise, <c>null</c>.
+        /// </returns>
+        /// 
+        public async Task<User?> AuthenticateAsync(string usernameOrEmail, string password)
         {
             var user = await context.Users
                 .FirstOrDefaultAsync(u => u.Username == usernameOrEmail || u.Email == usernameOrEmail);
@@ -24,11 +36,16 @@ namespace NutritionTracker.Api.Repositories
         }
 
 
-        // By using Expression<Func<User, bool>> Instead of Func<User, bool> we allows Entity Framework to parse and convert
-        // the filters into SQL queries. Otherwise because it cant translate the func delegates
-        // into sql queries, it would load everthing in memory and filter them there.
-        public async Task<List<User>> GetAllUsersFilteredPaginatedAsync(int pageNumber, int pageSize,
-            Expression<Func<User, bool>> predicates)
+        /// <summary>
+        /// Retrieves a paginated list of users filtered by the specified predicate.
+        /// </summary>
+        /// <param name="pageNumber">The page number to retrieve (1-based).</param>
+        /// <param name="pageSize">The number of users per page.</param>
+        /// <param name="predicates">An expression used to filter users.</param>
+        /// <returns>A list of <see cref="User"/> objects matching the filter criteria.</returns>
+        ///
+        public async Task<List<User>> GetAllFilteredPaginatedAsync(int pageNumber, int pageSize,
+            Expression<Func<User, bool>> predicates)  // Uses Expression<Func<User, bool>> to ensure filtering is performed in SQL, avoiding in-memory filtering.
         {
             int skip = (pageNumber - 1) * pageSize;
 
@@ -43,11 +60,17 @@ namespace NutritionTracker.Api.Repositories
             return await query.ToListAsync();
         }
 
-        
-        public async Task<User?> GetUserByUsernameAsync(string username) =>  await context.Users.FirstOrDefaultAsync(u => u.Username == username);
 
-
-        public async Task<User?> UpdateUserAsync(int id, User user)
+        /// <summary>
+        /// Updates an existing user with new data.
+        /// </summary>
+        /// <param name="id">The ID of the user to update.</param>
+        /// <param name="user">The updated <see cref="User"/> object.</param>
+        /// <returns>
+        /// The original <see cref="User"/> object if found; otherwise, <c>null</c>.
+        /// </returns>
+        /// 
+        public async Task<User?> UpdateAsync(int id, User user)
         {
             var existingUser = await context.Users.FindAsync(id);
             if (existingUser == null)
@@ -62,6 +85,20 @@ namespace NutritionTracker.Api.Repositories
         }
 
 
+        /// <summary>
+        /// Retrieves a user by their username.
+        /// </summary>
+        /// <param name="username">The username to search for.</param>
+        /// <returns>A <see cref="User"/> object if found; otherwise, <c>null</c>.</returns>
+        public async Task<User?> GetByUsernameAsync(string username) => await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+
+
+        /// <summary>
+        /// Checks whether a user with the specified email already exists.
+        /// </summary>
+        /// <param name="email">The email address to check.</param>
+        /// <returns><c>true</c> if the email exists; otherwise, <c>false</c>.</returns>
+        /// 
         public async Task<bool> EmailExistsAsync(string? email) => await context.Users.AnyAsync(u => u.Email == email);
     }
 }

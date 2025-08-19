@@ -1,4 +1,6 @@
-﻿namespace NutritionTracker.Api.Repositories
+﻿using NutritionTracker.Api.Repositories.Interfaces;
+
+namespace NutritionTracker.Api.Repositories
 {
     public static class RepositoriesDIExtension
     {

@@ -1,7 +1,6 @@
-﻿using NutritionTracker.Api.Core.Enums;
-using NutritionTracker.Api.Core.Filters;
+﻿using NutritionTracker.Api.Core.Filters;
 using NutritionTracker.Api.Data;
-using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.DTOs;
 
 namespace NutritionTracker.Api.Services
 {

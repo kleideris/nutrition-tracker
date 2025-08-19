@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
 using NutritionTracker.Api.Core.Enums;
-using NutritionTracker.Api.Repositories;
+using NutritionTracker.Api.Repositories.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

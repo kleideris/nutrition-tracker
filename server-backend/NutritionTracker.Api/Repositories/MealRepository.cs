@@ -7,8 +7,7 @@ namespace NutritionTracker.Api.Repositories
     public class MealRepository(AppDBContext context) : BaseRepository<Meal>(context), IMealRepository
     {
 
-
-        //WIP
+        //need to drop this and refactor the controllers
         public async Task<bool> IsMealTypeLoggedForDayAsync(int userId, MealType mealType, DateTime date)
         {
             return await dbset.AnyAsync(m =>
@@ -18,18 +17,28 @@ namespace NutritionTracker.Api.Repositories
         }
 
 
-        //Finished (Adds meal but need to make it so you can only add 1 type of meal per day...)
-        public async Task AddMealAsync(Meal meal) => await context.Meals.AddAsync(meal);
-
-
-        //Finished with minor bugs
-        public async Task<Meal?> GetMealByIdAsync(int mealId) => await context.Meals.FindAsync(mealId);
-
-
-        //Finished with minor bugs
-        public async Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId)
+        public override async Task<Meal?> GetAsync(int mealId)
         {
             return await context.Meals
+                .Include(m => m.MealFoodItems)
+                    .ThenInclude(mfi => mfi.FoodItem)
+                        .ThenInclude(fi => fi.NutritionData)
+                .FirstOrDefaultAsync(m => m.Id == mealId);
+        }
+
+
+        //public async Task AddMealAsync(Meal meal) => await context.Meals.AddAsync(meal);
+
+
+        //public async Task<Meal?> GetMealByIdAsync(int mealId) => await context.Meals.FindAsync(mealId);
+
+
+        public async Task<IEnumerable<Meal>> GetByUserAsync(int userId)
+        {
+            return await context.Meals
+                .Include(m => m.MealFoodItems)
+                    .ThenInclude(mfi => mfi.FoodItem)
+                        .ThenInclude(fi => fi.NutritionData)
                 .Where(m => m.UserId == userId)
                 .ToListAsync();
         }

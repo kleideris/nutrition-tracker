@@ -1,46 +1,26 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using NutritionTracker.Api.Data;
-using NutritionTracker.Api.Models;
+﻿using NutritionTracker.Api.Data;
 
-namespace NutritionTracker.Api.Core.Helpers
+public static class AdminSeeder
 {
-    public class AdminSeeder
+    public static void Seed(IServiceProvider services)
     {
-        //public static async Task SeedInitialAdminAsync(IServiceProvider serviceProvider)
-        //{
-        //    using var scope = serviceProvider.CreateScope();
+        using var scope = services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDBContext>();
 
-        //    var context = scope.ServiceProvider.GetRequiredService<AppDBContext>();
-        //    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        //    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+        if (!db.Users.Any(u => u.UserRole == NutritionTracker.Api.Core.Enums.UserRole.Admin))
+        {
+            var adminUser = new User
+            {
+                Username = "admin",
+                Email = "admin@email.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin"),
+                Firstname = "ad",
+                Lastname = "min",
+                UserRole = NutritionTracker.Api.Core.Enums.UserRole.Admin
+            };
 
-        //    var adminEmail = config["InitialAdmin:Email"];
-        //    var adminPassword = config["InitialAdmin:Password"];
-
-        //    var adminExists = await userManager.Users.AnyAsync(u => u.Email == adminEmail);
-
-        //    if (!adminExists)
-        //    {
-        //        var adminUser = new ApplicationUser
-        //        {
-        //            Username = adminEmail,
-        //            Email = adminEmail
-        //        };
-
-        //        var result = await userManager.CreateAsync(adminUser, adminPassword!);
-        //        if (result.Succeeded)
-        //        {
-        //            await userManager.AddToRoleAsync(adminUser, "Admin");
-        //            Console.WriteLine("✅ Initial admin created.");
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("❌ Failed to create initial admin:");
-        //            foreach (var error in result.Errors)
-        //                Console.WriteLine($"- {error.Description}");
-        //        }
-        //    }
-        //}
+            db.Users.Add(adminUser);
+            db.SaveChanges();
+        }
     }
 }

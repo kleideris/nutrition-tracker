@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using NutritionTracker.Api.Repositories;
+using NutritionTracker.Api.Repositories.Interfaces;
 
 namespace NutritionTracker.Api.Services
 {
@@ -14,10 +14,11 @@ namespace NutritionTracker.Api.Services
             _mapper = mapper;
         }
 
-        public AuthService AuthService => new AuthService(_unitOfWork, _mapper);
+        public AuthService AuthService => new(_unitOfWork, _mapper);
         public UserService UserService => new (_unitOfWork, _mapper);
         public MealService MealService => new (_unitOfWork, _mapper);
         public MealFoodItemService MealFoodItemService => new (_unitOfWork, _mapper);
         public FoodItemService FoodItemService => new (_unitOfWork, _mapper);
+        public NutritionService NutritionService => new ();
     }
 }

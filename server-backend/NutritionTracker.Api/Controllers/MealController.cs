@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NutritionTracker.Api.Core.Enums;
-using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.DTOs;
 using NutritionTracker.Api.Exceptions;
 using NutritionTracker.Api.Services;
 
 namespace NutritionTracker.Api.Controllers
 {
-    [Route("/api/meals")]
+    [Route("api/meals")]
     [ApiController]
     public class MealController(IApplicationService applicationService, IConfiguration configuration,
         IMapper mapper) : BaseController(applicationService)
@@ -17,77 +18,86 @@ namespace NutritionTracker.Api.Controllers
 
 
         [HttpPost("meal-type/{mealType}")]
-        public async Task<IActionResult> AddMeal(MealType mealType, [FromBody] MealPostDto dto)
+        [Authorize]
+        public async Task<IActionResult> Add(MealType mealType, [FromBody] AddMealDto dto)
         {
-            var existingMeals = await _applicationService.MealService.GetMealsByUserAsync(dto.UserId);
-            bool alreadyLogged = existingMeals.Any(m =>
-                m.MealType == mealType &&
-                m.Timestamp.Date == dto.Timestamp.Date);
-            if (alreadyLogged)
-                return BadRequest(new { message = $"Meal of type {mealType} already logged for this day." });
+            var existingMeals = await _applicationService.MealService.GetByUserAsync(dto.UserId);
 
-
-            var createdMeal = await _applicationService.MealService.AddMealAsync(mealType, dto);
+            var createdMeal = await _applicationService.MealService.AddAsync(mealType, dto);
             if (createdMeal == null)
                 return BadRequest(new { message = "Failed to log meal." });
 
+            var mealDto = _mapper.Map<MealReadOnlyDto>(createdMeal);
 
-            // Step 3: Retrieve the newly created meal (assuming latest meal for user is the one just added)
-            var meals = await _applicationService.MealService.GetMealsByUserAsync(dto.UserId);
-            var meal = meals
-                .Where(m => m.MealType == mealType && m.Timestamp.Date == dto.Timestamp.Date)
-                .OrderByDescending(m => m.Timestamp)
-                .FirstOrDefault();
+            // Adds aggregated nutrition manually
+            var aggregated = _applicationService.NutritionService.CalculateNutrition(createdMeal);
+            mealDto.TotalCalories = aggregated.TotalCalories;
+            mealDto.TotalProtein = aggregated.TotalProtein;
+            mealDto.TotalCarbs = aggregated.TotalCarbs;
+            mealDto.TotalFats = aggregated.TotalFats;
 
-            if (meal == null)
-                return StatusCode(500, new { message = "Meal was created but could not be retrieved." });
-
-            // Step 4: Create MealFoodItems and associate them with the meal
-            var mealFoodItems = await _applicationService.MealFoodItemService.CreateMealFoodItemsAsync(dto.MealFoodItems);
-            foreach (var item in mealFoodItems)
-            {
-                item.MealId = meal.Id;
-                await _applicationService.MealFoodItemService.AddFoodItemToMealAsync(item.MealId, item.FoodItemId, item.Quantity, item.UnitOfMeasurement);
-            }
-
-            return Ok(new
-            {
-                message = "Meal logged successfully",
-                meal,
-                foodItems = mealFoodItems
-            });
-
+            return Ok(new { message = "Meal logged successfully", meal = mealDto });
         }
 
 
-        //Finished  (Adds meal but need to make it so you can only add 1 type of meal per day...)
-        //[HttpPost("mealtype/{mealType}")]
-        //public async Task<IActionResult> AddMeal(MealType mealType, [FromBody] MealPostDto dto)
-        //{
-        //    bool success = await _applicationService.MealService.AddMealAsync(mealType, dto);
-
-        //    if (!success) return BadRequest(new { message = "Failed to log meal" });
-
-        //    return Ok(new { message = "Meal logged successfully" });
-        //}
-
-
-        //Finished with minor bugs
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetMealsById(int id)
+        [Authorize]
+        public async Task<IActionResult> GetById(int id)
         {
-            var meal = await _applicationService.MealService.GetMealByIdAsync(id) ?? throw new EntityNotFoundException("Meal", "Meal: " + id + " NotFound");
+            var meal = await _applicationService.MealService.GetByIdAsync(id) ?? throw new EntityNotFoundException("Meal", "Meal: " + id + " NotFound");
             var returnedDto = _mapper.Map<MealReadOnlyDto>(meal);
             return Ok(returnedDto);
         }
 
 
-        //Finished with minor bugs
+        //[HttpGet("user-id/{userId}")]
+        //public async Task<IActionResult> GetByUser(int userId)
+        //{
+        //    var meals = await _applicationService.MealService.GetByUserAsync(userId) ?? throw new EntityNotFoundException("Meal", "Meal: " + userId + " NotFound");
+        //    return Ok(meals);
+        //}
+
         [HttpGet("user-id/{userId}")]
-        public async Task<IActionResult> GetMealsByUser(int userId)
+        [Authorize]
+        public async Task<IActionResult> GetByUserAsync(int userId)
         {
-            var meals = await _applicationService.MealService.GetMealsByUserAsync(userId) ?? throw new EntityNotFoundException("Meal", "Meal: " + userId + " NotFound");
-            return Ok(meals);
+            var meals = await _applicationService.MealService.GetByUserAsync(userId);
+
+            var result = new List<MealReadOnlyDto>();
+
+            foreach (var meal in meals)
+            {
+                if (meal.MealFoodItems == null || !meal.MealFoodItems.Any())
+                    continue;
+
+                var nutrition = _applicationService.NutritionService.CalculateNutrition(meal);
+
+                var dto = new MealReadOnlyDto
+                {
+                    Id = meal.Id,
+                    MealType = meal.MealType,
+                    Timestamp = meal.Timestamp,
+                    TotalCalories = nutrition.TotalCalories,
+                    TotalProtein = nutrition.TotalProtein,
+                    TotalCarbs = nutrition.TotalCarbs,
+                    TotalFats = nutrition.TotalFats,
+                    FoodItems = meal.MealFoodItems.Select(mfi => new MealFoodItemDto
+                    {
+                        FoodItemId = mfi.FoodItemId,
+                        Quantity = mfi.Quantity,
+                        UnitOfMeasurement = mfi.UnitOfMeasurement,
+                        FoodName = mfi.FoodItem?.Name,
+                        Calories = mfi.FoodItem?.NutritionData?.Calories,
+                        Protein = mfi.FoodItem?.NutritionData?.Protein,
+                        Carbs = mfi.FoodItem?.NutritionData?.Carbohydrates,
+                        Fats = mfi.FoodItem?.NutritionData?.Fats
+                    }).ToList()
+                };
+
+                result.Add(dto);
+            }
+
+            return Ok(result);
         }
     }
 }

@@ -6,13 +6,13 @@ namespace NutritionTracker.Api.Services.Interfaces
     /// <summary>
     /// Provides methods for calculating nutritional data based on meal composition.
     /// </summary>
-    public interface INutritonService
+    public interface INutritionService
     {
 
         /// <summary>
         /// Calculates the nutritional values (e.g., calories, protein, carbs, fat) for a specific food item consumed in a meal.
         /// </summary>
-        FoodNutritionDto CalculateNutriton(MealFoodItem mealFoodItem);
+        FoodNutritionDto CalculateNutrition(MealFoodItem mealFoodItem);
 
 
         /// <summary>

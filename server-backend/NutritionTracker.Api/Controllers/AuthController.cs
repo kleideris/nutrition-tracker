@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.DTOs;
 using NutritionTracker.Api.Exceptions;
 using NutritionTracker.Api.Services;
 
 namespace NutritionTracker.Api.Controllers
 {
+    #region documentation
     /// <summary>
     /// Handles login requests and issues JWT tokens for authenticated users.
     /// </summary>
     /// 
+    #endregion
     [Route("api/auth")]
     [ApiController]
     public class AuthController(IApplicationService applicationService, IConfiguration configuration,
@@ -19,6 +21,7 @@ namespace NutritionTracker.Api.Controllers
         private readonly IMapper _mapper = mapper;
 
 
+        #region documentation
         /// <summary>
         /// Authenticates user credentials and returns a JWT token for authorized access.
         /// </summary>
@@ -30,6 +33,7 @@ namespace NutritionTracker.Api.Controllers
         /// Thrown when username or password is invalid.
         /// </exception>
         /// 
+        #endregion
         [HttpPost("login/access-token")]
         public async Task<ActionResult<JwtTokenDto>> Login([FromBody] LoginUserDto credentials)
         {

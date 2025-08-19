@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NutritionTracker.Api.Data;
-using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.DTOs;
 using NutritionTracker.Api.Services;
 
 namespace NutritionTracker.Api.Controllers
@@ -28,6 +29,7 @@ namespace NutritionTracker.Api.Controllers
         /// </returns>
         /// 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddFoodItem(FoodItemDto dto)
         {
             bool success = await _applicationService.FoodItemService.AddAsync(dto);
@@ -55,6 +57,7 @@ namespace NutritionTracker.Api.Controllers
         /// </returns>
         /// 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteById(int id)
         {
             bool success = await _applicationService.FoodItemService.DeleteAsync(id);
@@ -82,6 +85,7 @@ namespace NutritionTracker.Api.Controllers
         /// </returns>
         /// 
         [HttpGet("search")]
+        [Authorize]
         public async Task<IActionResult> SearchFoodItems([FromQuery] string? query)
         {
             List<FoodItem> matches;

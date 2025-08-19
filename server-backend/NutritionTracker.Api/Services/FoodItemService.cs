@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using NutritionTracker.Api.Data;
-using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.DTOs;
 using NutritionTracker.Api.Exceptions;
-using NutritionTracker.Api.Repositories;
+using NutritionTracker.Api.Repositories.Interfaces;
 using Serilog;
 
 namespace NutritionTracker.Api.Services
@@ -31,7 +30,7 @@ namespace NutritionTracker.Api.Services
             FoodItem foodItem = _mapper.Map<FoodItem>(dto);
             if (foodItem == null)
             {
-                _logger.LogWarning("FoodItem mapping failed for DTO: {@dto}", dto);
+                _logger.LogWarning("FoodItem mapping failed for DTOs: {@dto}", dto);
                 return false;
             }
 

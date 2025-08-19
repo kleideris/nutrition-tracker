@@ -1,4 +1,5 @@
 ﻿using NutritionTracker.Api.Data;
+using NutritionTracker.Api.Repositories.Interfaces;
 
 namespace NutritionTracker.Api.Repositories
 {
@@ -11,10 +12,6 @@ namespace NutritionTracker.Api.Repositories
         public MealFoodItemRepository MealFoodItemRepository => new (_context);
         public FoodItemRepository FoodItemRepository => new(_context);
 
-
-        public async Task<bool> SaveAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
-        }
+        public async Task<bool> SaveAsync() => await _context.SaveChangesAsync() > 0;
     }
 }

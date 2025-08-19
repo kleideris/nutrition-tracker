@@ -1,60 +1,65 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using NutritionTracker.Api.Core.Enums;
 using NutritionTracker.Api.Data;
-using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.DTOs;
 using NutritionTracker.Api.Exceptions;
-using NutritionTracker.Api.Repositories;
+using NutritionTracker.Api.Repositories.Interfaces;
+using NutritionTracker.Api.Services.Interfaces;
 using Serilog;
 
 namespace NutritionTracker.Api.Services
 {
-    public class MealService /*: IMealService*/
+    public class MealService(IUnitOfWork unitOfWork, IMapper mapper) /*: IMealService*/
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly ILogger<MealService> _logger;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
+        private readonly ILogger<MealService> _logger = new LoggerFactory().AddSerilog().CreateLogger<MealService>();
 
-        public MealService(IUnitOfWork unitOfWork, IMapper mapper)
+
+        //also calls the mealfooditem repository internally to create the one to many connection
+        public async Task<Meal?> AddAsync(MealType mealType, AddMealDto dto)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _logger = new LoggerFactory().AddSerilog().CreateLogger<MealService>();  // creates the Logger for meal service using a factory method
+            var user = await _unitOfWork.UserRepository.GetAsync(dto.UserId) ?? 
+                throw new EntityNotFoundException("User", "User with id: " + dto.UserId + " could not be found");
+
+            var meal = new Meal
+            {
+                UserId = dto.UserId,
+                MealType = mealType,
+                Timestamp = dto.Timestamp,
+                MealFoodItems = new List<MealFoodItem>()
+            };
+
+
+            foreach (var itemDto in dto.MealFoodItems)
+            {
+                var foodItem = await _unitOfWork.FoodItemRepository.GetAsync(itemDto.FoodItemId) ?? 
+                    throw new EntityNotFoundException("FoodItem", "FoodItem with id: " + itemDto.FoodItemId + " could not be found");
+
+                var mealFoodItem = new MealFoodItem
+                {
+                    FoodItem = foodItem,
+                    Quantity = itemDto.Quantity,
+                    UnitOfMeasurement = itemDto.UnitOfMeasurement,
+                    Meal = meal
+                };
+
+                await _unitOfWork.MealFoodItemRepository.AddAsync(mealFoodItem);
+            }
+
+            await _unitOfWork.MealRepository.AddAsync(meal);
+            await _unitOfWork.SaveAsync();
+
+            _logger.LogInformation("Meal Registered: {MealId}", meal.Id);
+
+            return meal;
         }
 
 
-        //Finished(Adds meal but need to make it so you can only add 1 type of meal per day...)
-        public async Task<Meal?> AddMealAsync(MealType mealType, MealPostDto dto)
-        {
-            Meal? meal = _mapper.Map<Meal>(dto);
-            meal.MealType = mealType;
-
-            if (meal == null)
-            {
-                _logger.LogWarning("Meal mapping failed for DTO: {@dto}", dto);
-                return null;
-            }
-            try
-            {
-                await _unitOfWork.MealRepository.AddMealAsync(meal);
-                await _unitOfWork.SaveAsync();
-                _logger.LogInformation("Meal: {meal} added successfully", meal);  //TODO: check if this needs ToString to work
-                return meal;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("{Message},{Exception}", ex.Message, ex.StackTrace);
-                throw;
-            }
-        }
+        public async Task<Meal?> GetByIdAsync(int mealId) => await _unitOfWork.MealRepository.GetAsync(mealId);
 
 
-        //Finished with minor bugs
-        public async Task<Meal?> GetMealByIdAsync(int mealId) => await _unitOfWork.MealRepository.GetMealByIdAsync(mealId);
-
-
-        //Finished with minor bugs
-        public Task<IEnumerable<Meal>> GetMealsByUserAsync(int userId) => _unitOfWork.MealRepository.GetMealsByUserAsync(userId);
+        public Task<IEnumerable<Meal>> GetByUserAsync(int userId) => _unitOfWork.MealRepository.GetByUserAsync(userId);
     }
 }
 

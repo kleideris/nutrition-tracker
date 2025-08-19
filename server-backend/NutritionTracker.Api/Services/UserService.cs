@@ -2,15 +2,15 @@
 using NutritionTracker.Api.Core.Filters;
 using NutritionTracker.Api.Core.Helpers;
 using NutritionTracker.Api.Data;
-using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.DTOs;
 using NutritionTracker.Api.Exceptions;
-using NutritionTracker.Api.Repositories;
+using NutritionTracker.Api.Repositories.Interfaces;
 using Serilog;
 using System.Linq.Expressions;
 
 namespace NutritionTracker.Api.Services
 {
-    public class UserService(IUnitOfWork unitOfWork, IMapper mapper) : IUserService
+    public class UserService(IUnitOfWork unitOfWork, IMapper mapper)/* : IUserService*/
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
@@ -22,7 +22,7 @@ namespace NutritionTracker.Api.Services
             Expression<Func<User, bool>> predicates = UserPredicateBuilder.BuildPredicates(userFilterDTO);
 
             var users = await _unitOfWork.UserRepository
-                .GetAllUsersFilteredPaginatedAsync(pageNumber, pageSize, predicates);
+                .GetAllFilteredPaginatedAsync(pageNumber, pageSize, predicates);
             return users;
         }
 
@@ -30,12 +30,12 @@ namespace NutritionTracker.Api.Services
         public async Task<User?> GetByIdAsync(int id) => await _unitOfWork.UserRepository.GetAsync(id);
 
 
-        public async Task<User?> GetByUsernameAsync(string username) => await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
+        public async Task<User?> GetByUsernameAsync(string username) => await _unitOfWork.UserRepository.GetByUsernameAsync(username);
 
 
         public async Task<User?> VerifyAndGetAsync(LoginUserDto credentials)
         {
-            var user = await _unitOfWork.UserRepository.AuthenticateUserAsync(credentials.Username!, credentials.Password!) ??
+            var user = await _unitOfWork.UserRepository.AuthenticateAsync(credentials.Username!, credentials.Password!) ??
                 throw new EntityNotFoundException("User", "User with username: " + credentials.Username + " could not be found");
 
             _logger.LogInformation("User Found, Authenticated and returned: {UserId}", user.Id);
@@ -47,7 +47,7 @@ namespace NutritionTracker.Api.Services
         //Finished--
         public async Task<RegisterResult> RegisterAsync(RegisterUserDto dto)
         {
-            var existingUser = await _unitOfWork.UserRepository.GetUserByUsernameAsync(dto.Username!);
+            var existingUser = await _unitOfWork.UserRepository.GetByUsernameAsync(dto.Username!);
             if (existingUser != null)
             {
                 return new RegisterResult { Success = false, ErrorMessage = "Username already in use." };

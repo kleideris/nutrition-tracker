@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using NutritionTracker.Api.Data;
-using NutritionTracker.Api.DTO;
+using NutritionTracker.Api.DTOs;
 using NutritionTracker.Api.Exceptions;
-using NutritionTracker.Api.Repositories;
+using NutritionTracker.Api.Repositories.Interfaces;
+using NutritionTracker.Api.Services.Interfaces;
 using Serilog;
 
 namespace NutritionTracker.Api.Services
@@ -14,33 +14,7 @@ namespace NutritionTracker.Api.Services
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<MealFoodItemService> _logger = new LoggerFactory().AddSerilog().CreateLogger<MealFoodItemService>();
 
-
-
-        /// work in progress
-        public async Task<List<MealFoodItem>> CreateMealFoodItemsAsync(List<MealFoodItemDto> dtos)
-        {
-            var result = new List<MealFoodItem>();
-
-            foreach (var dto in dtos)
-            {
-                // Optional: validate FoodItem exists
-                var existingfoodItem = await _unitOfWork.FoodItemRepository.GetAsync(dto.FoodItemId) ??
-                    throw new EntityNotFoundException("FoodItem", "Food item with id: " + dto.FoodItemId + " was not found");
-
-                var item = new MealFoodItem
-                {
-                    FoodItemId = dto.FoodItemId,
-                    Quantity = dto.Quantity,
-                    UnitOfMeasurement = dto.UnitOfMeasurement
-                };
-
-                result.Add(item);
-            }
-
-            return result;
-        }
-
-        //WIP#
+        
         public async Task<bool> AddFoodItemToMealAsync(int mealId, int foodItemId, float quantity, string unit)
         {
             var meal = _unitOfWork.MealRepository.GetAsync(mealId) ??
@@ -69,12 +43,6 @@ namespace NutritionTracker.Api.Services
         }
 
 
-        //WIP#
-        public async Task<IEnumerable<MealFoodItem>> GetByMealIdAsync(int mealId) => 
-            await _unitOfWork.MealFoodItemRepository.GetByMealIdAsync(mealId);
-
-
-        //WIP #
         public async Task<bool> DeleteFoodItemOfMealAsync(int mealId, int foodItemId, float quantity, string unit)
         {
             var meal = _unitOfWork.MealRepository.GetAsync(mealId) ??
@@ -95,12 +63,14 @@ namespace NutritionTracker.Api.Services
         }
 
 
-        //WIP#
+        public async Task<IEnumerable<MealFoodItem>> GetByMealIdAsync(int mealId) =>
+            await _unitOfWork.MealFoodItemRepository.GetByMealIdAsync(mealId);
+
+
         public async Task<MealFoodItem?> GetByJoinedIdsAsync(int mealId, int foodItemId) => 
             await _unitOfWork.MealFoodItemRepository.GetByJoinedIdsAsync(mealId, foodItemId);
 
 
-        //WIP#
         public async Task<bool> UpdateQuantityOfFoodItemAsync(int mealId, int foodItemId, float quantity, string unit)
         {
             var meal = _unitOfWork.MealRepository.GetAsync(mealId) ??
