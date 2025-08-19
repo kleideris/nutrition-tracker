@@ -118,3 +118,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* .bg-top-offset {
+  background-position: center top -380px;
+} */
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
