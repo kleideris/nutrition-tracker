@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { SearchFoodItems } from "../components/FoodItem/SearchFoodItems";
 import AddFoodItem from "../components/FoodItem/AddFoodItem";
-import BackButton from "@/components/BackButton";
+import RemoveFoodItem from "@/components/FoodItem/RemoveFoodItem";
+import DashboardContentWrapper from "@/components/DashboardContentWrapper";
 import { toast } from "sonner";
+import { fetchWithAuth } from "@/api/fetchWithAuth";
+import { useAuth } from "@/hooks/useAuth";
 
 type FoodItemType = {
   name: string;
@@ -16,22 +19,23 @@ type FoodItemType = {
 };
 
 export default function FoodItemPage() {
-  const [view, setView] = useState<"search" | "add">("search");
+  const [view, setView] = useState<"search" | "add" | "remove">("search");
+  const apiUrl = import.meta.env.VITE_API_URL;
+  
+  const { user } = useAuth();
+  const isAdmin = user?.role === "Admin"
 
   const handleAddFoodItem = async (item: FoodItemType) => {
-    const apiUrl = import.meta.env.VITE_API_URL;
     if (!apiUrl) {
       toast.error("API URL is not configured.");
       return;
     }
 
     try {
-      const response = await fetch(`${apiUrl}/food-items`, {
+      const response = await fetchWithAuth(`/food-items`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(item)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item),
       });
 
       if (!response.ok) {
@@ -49,35 +53,49 @@ export default function FoodItemPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
+    <DashboardContentWrapper>
       <div className="flex flex-wrap items-center gap-60">
-        <BackButton />
 
         <div className="flex gap-4 ml-4">
-          <button
-            onClick={() => setView("search")}
-            className={`px-4 py-2 rounded-md ${
-              view === "search" ? "bg-green-600 text-white" : "bg-gray-200"
-            }`}
-          >
-            Search
-          </button>
-          <button
-            onClick={() => setView("add")}
-            className={`px-4 py-2 rounded-md ${
-              view === "add" ? "bg-green-600 text-white" : "bg-gray-200"
-            }`}
-          >
-            Add Food Item
-          </button>
+          {isAdmin && (
+            <>
+              <button
+                onClick={() => setView("search")}
+                className={`px-4 py-2 rounded-md ${
+                  view === "search" ? "bg-green-600 text-white" : "bg-gray-200"
+                }`}
+              >
+                Search
+              </button>
+              <button
+                onClick={() => setView("add")}
+                className={`px-4 py-2 rounded-md ${
+                  view === "add" ? "bg-green-600 text-white" : "bg-gray-200"
+                }`}
+              >
+                Add Food Item
+              </button>
+              <button
+                onClick={() => setView("remove")}
+                className={`px-4 py-2 rounded-md ${
+                  view === "remove" ? "bg-red-600 text-white" : "bg-gray-200"
+                }`}
+              >
+                Remove Food Item
+              </button>
+            </>
+          )}
         </div>
+          
       </div>
 
       {view === "search" ? (
         <SearchFoodItems />
-      ) : (
+      ) : view === "add" ? (
         <AddFoodItem onAdd={handleAddFoodItem} />
+      ) : (
+        <RemoveFoodItem apiUrl={apiUrl} />
       )}
-    </div>
+    </DashboardContentWrapper>
   );
 }

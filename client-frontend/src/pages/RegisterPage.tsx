@@ -63,7 +63,7 @@ export default function RegisterPage() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="max-w-sm mx-auto p-8 space-y-4 border rounded"
+      className="max-w-sm mx-auto p-8 space-y-4 border rounded bg-white"
     >
       <h1 className="text-xl font-semibold mb-4">Create Account</h1>
 
@@ -86,7 +86,7 @@ export default function RegisterPage() {
       </div>
 
       <div>
-        <Label className="py-1" htmlFor="email">Email (optional)</Label>
+        <Label className="py-1" htmlFor="email">Email</Label>
         <Input id="email" type="email" {...register("email")} disabled={isSubmitting} />
         {errors.email && <p className="text-red-600 text-sm">{errors.email.message}</p>}
       </div>

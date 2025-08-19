@@ -34,7 +34,7 @@ export default function LoginPage() {
     <>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-sm mx-auto p-8 space-y-4 border rounded"
+        className="max-w-sm mx-auto p-8 space-y-4 border rounded mt-20  bg-white"
       >
         <h1>Login</h1>
         <div>
