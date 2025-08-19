@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -168,37 +169,28 @@ namespace NutritionTracker.Api
             // Applies Global exception handler.
             app.UseExceptionHandler(options => { } );
 
-            // Automatically create an admin on startup if there isnt any in the db
-            AdminSeeder.Seed(app.Services);
 
-            // Initializes the db for docker.
+
+            // Used for docker to solve the problem of db not being ready before the backend was trying to access it.
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
-                var connection = dbContext.Database.GetDbConnection();
 
                 try
                 {
-                    connection.Open();
-                    using var command = connection.CreateCommand();
-                    command.CommandText = "SELECT db_id('NutritionTrackerDB')";
-                    var result = command.ExecuteScalar();
-
-                    if (result == DBNull.Value || result == null)
-                    {
-                        dbContext.Database.Migrate();
-                    }
+                    Console.WriteLine("🛠️ Applying migrations...");
+                    dbContext.Database.Migrate(); // This creates the DB and tables
+                    Console.WriteLine("✅ Migrations applied.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("DB check failed: " + ex.Message);
+                    Console.WriteLine("❌ Migration failed: " + ex.Message);
                 }
-                finally
-                {
-                    connection.Close();
-                }
-            }
 
+                // ✅ Now it's safe to seed
+                // Automatically create an admin on startup if there isnt any in the db
+                AdminSeeder.Seed(scope.ServiceProvider);
+            }
 
             //In development mode, shows interactive Swagger documentation
             if (app.Environment.IsDevelopment())
