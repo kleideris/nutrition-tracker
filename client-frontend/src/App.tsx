@@ -8,11 +8,12 @@ import DashboardPage from './pages/DashboardPage';
 import { Toaster } from 'sonner';
 import NotFoundPage from './pages/NotFoundPage';
 import { PublicRoute } from './components/PublicRoute';
-import LogMealForm from './components/LogMealForm';
-import MealList from './components/MealList';
-import UserProfile from './components/UserProfile';
 import RegisterPage from './pages/RegisterPage';
 import FoodItemsPage from './pages/FoodItemsPage';
+import UserProfilePage from './pages/UserProfilePage';
+import MyMealsPage from './pages/MyMealsPage';
+import DashboardWelcome from './components/DashboardWelcome';
+import LogMealPage from './pages/LogMealPage';
 
 
 const App = () => {
@@ -28,16 +29,14 @@ const App = () => {
 
 
                 <Route path="/dashboard" element={<ProtectedRoute />}>
-                  <Route index element={<DashboardPage />} />
-                    <Route path="log-meal" element={<LogMealForm />} />
-                    <Route path="my-meals" element={<MealList />} />
-                    <Route path="profile" element={<UserProfile />} />
+                  <Route element={<DashboardPage />}>
+                  <Route index element={<DashboardWelcome />} /> {/* 👈 Add this */}
+                    <Route path="log-meal" element={<LogMealPage />} />
+                    <Route path="my-meals" element={<MyMealsPage />} />
                     <Route path="food-items" element={<FoodItemsPage />} />
-                  <Route/>
-
+                    <Route path="profile" element={<UserProfilePage />} />
+                  </Route>
                 </Route>
-                {/* <Route path="/register" element={<RegisterPage />} /> */}
-                {/* <Route path="/log" element={<LogMealPage />} /> */}
 
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
