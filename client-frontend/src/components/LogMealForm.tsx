@@ -1,143 +1,252 @@
-import { useState } from "react";
-import { fetchWithAuth } from "@/api/fetchWithAuth";
+import { useContext, useState } from "react";
+import { type FoodItemDto } from "@/dto/FoodItemDto";
 import { toast } from "sonner";
-import BackButton from "@/components/BackButton";
-import FoodItemSelector from "@/components/FoodItemSelector";
+import { AuthContext } from "@/context/AuthContext";
+import { fetchWithAuth } from "@/api/fetchWithAuth";
 
-export default function LogMealForm() {
-  const [mealType, setMealType] = useState("Breakfast");
-  const [timestamp, setTimestamp] = useState(new Date().toISOString().slice(0, 10));
-  const [selectedFoodItems, setSelectedFoodItems] = useState<any[]>([]);
-  const [currentFood, setCurrentFood] = useState<any | null>(null);
-  const [quantity, setQuantity] = useState<number>(1);
-  const [unit, setUnit] = useState<string>("g");
+interface SelectedItem extends FoodItemDto {
+  quantity: number;
+  unit: string;
+}
 
-  const handleFoodSelect = (item: any) => {
-    setCurrentFood(item);
-    toast.success(`Selected: ${item.name}`);
-  };
+const measurementUnits = ["g", "serving"];
+const mealTypes = ["Breakfast", "Lunch", "Dinner", "Snack"];
 
-  const handleAddFoodItem = () => {
-    if (!currentFood) return toast.error("Select a food item first");
-    if (quantity <= 0) return toast.error("Quantity must be greater than 0");
+export const LogMealForm = () => {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<FoodItemDto[]>([]);
+  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
+  const [mealType, setMealType] = useState("Lunch");
 
-    const newItem = {
-      foodItemId: currentFood.id,
-      quantity,
-      unitOfMeasurement: unit,
-    };
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const auth = useContext(AuthContext);
 
-    setSelectedFoodItems((prev) => [...prev, newItem]);
-    setCurrentFood(null);
-    setQuantity(1);
-    setUnit("g");
-    toast.success(`Added ${currentFood.name} to meal`);
-  };
+  if (!auth || auth.loading) return null;
+  const { user } = auth;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  const dto = {
-    userId: 1, // ideally from context
-    timestamp: new Date(timestamp).toISOString(), // ensure ISO format
-    mealFoodItems: selectedFoodItems.map(item => ({
-      foodItemId: item.foodItemId,
-      quantity: parseFloat(item.quantity),
-      unitOfMeasurement: item.unitOfMeasurement
-    }))
-  };
-
-  try {
-    const res = await fetchWithAuth(`/meals/meal-type/${mealType}`, {
-      method: "POST",
-      body: JSON.stringify(dto),
-    });
-
-    if (!res.ok) {
-      const error = await res.json();
-      toast.error(`${error.message || "Failed to log meal."}`);
+  const handleSearch = async () => {
+    if (!apiUrl) {
+      toast.error("API URL is not configured.");
       return;
     }
 
-    toast.success("Meal logged successfully!");
-    setSelectedFoodItems([]);
-  } catch {
-    toast.error("Network error while logging meal.");
-  }
-};
+    try {
+      const res = await fetchWithAuth(
+        `/food-items/search?query=${encodeURIComponent(query.trim())}`,
+        {
+          method: "GET",
+          headers: {
+            "Cache-Control": "no-cache",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const contentType = res.headers.get("content-type");
+      if (!res.ok || !contentType?.includes("application/json")) {
+        const raw = await res.text();
+        console.error("Unexpected response:", raw);
+        throw new Error("Invalid response format");
+      }
+
+      const data = await res.json();
+      setResults(data);
+    } catch (err) {
+      console.error("Search failed:", err);
+      toast.error("Search failed. Please try again.");
+    }
+  };
+
+  const handleSelect = (item: FoodItemDto) => {
+    const alreadyAdded = selectedItems.find((i) => i.name === item.name);
+    if (alreadyAdded) return;
+
+    setSelectedItems((prev) => [...prev, { ...item, quantity: 1, unit: "g" }]);
+    setQuery("");
+    setResults([]);
+  };
+
+  const updateItem = <K extends keyof SelectedItem>(
+    index: number,
+    field: K,
+    value: SelectedItem[K]
+  ) => {
+    const updated = [...selectedItems];
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+    };
+    setSelectedItems(updated);
+  };
+
+  const handleRemove = (index: number) => {
+    const updated = [...selectedItems];
+    updated.splice(index, 1);
+    setSelectedItems(updated);
+  };
+
+  const handleLogMeal = async () => {
+    if (!apiUrl) {
+      toast.error("API URL is not configured.");
+      return;
+    }
+
+    if (!user?.id) {
+      toast.error("User not authenticated.");
+      return;
+    }
+
+    const payload = {
+      userId: parseInt(user.id), // Convert string to number if needed
+      timestamp: new Date().toISOString(),
+      mealFoodItems: selectedItems.map((item) => ({
+        foodItemId: item.id,
+        quantity: item.quantity,
+        unitOfMeasurement: item.unit || "grams",
+      })),
+    };
+
+    try {
+      const res = await fetchWithAuth(`/meals/meal-type/${mealType}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const contentType = res.headers.get("content-type");
+      if (!res.ok || !contentType?.includes("application/json")) {
+        const raw = await res.text();
+        console.error("Unexpected response:", raw);
+        throw new Error("Invalid response format");
+      }
+
+      const data = await res.json();
+      toast.success("Meal logged successfully!");
+      console.log("Logged meal:", data);
+      setSelectedItems([]);
+    } catch (err) {
+      console.error("Log meal failed:", err);
+      toast.error("Failed to log meal. Please try again.");
+    }
+  };
 
   return (
-    <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow">
-      <BackButton />
-      <h2 className="text-2xl font-semibold mb-6 border-b pb-2">🍽️ Log a Meal</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block font-medium mb-1">Meal Type</label>
-          <select value={mealType} onChange={(e) => setMealType(e.target.value)} className="w-full border rounded px-3 py-2">
-            <option>Breakfast</option>
-            <option>Lunch</option>
-            <option>Dinner</option>
-            <option>Snack</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block font-medium mb-1">Date</label>
-          <input type="date" value={timestamp} onChange={(e) => setTimestamp(e.target.value)} className="w-full border rounded px-3 py-2" />
-        </div>
-
-        <div>
-          <label className="block font-medium mb-1">Search Food Item</label>
-          <FoodItemSelector onSelect={handleFoodSelect} />
-        </div>
-
-        {currentFood && (
-          <div className="border p-4 rounded bg-gray-50 space-y-4">
-            <div className="text-sm text-gray-700 font-medium">Selected: {currentFood.name}</div>
-
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-1">Quantity</label>
-                <input
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(parseFloat(e.target.value))}
-                  className="w-full border rounded px-3 py-2"
-                />
-              </div>
-
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-1">Unit</label>
-                <select value={unit} onChange={(e) => setUnit(e.target.value)} className="w-full border rounded px-3 py-2">
-                  <option value="g">grams (g)</option>
-                  <option value="ml">milliliters (ml)</option>
-                  <option value="pcs">pieces (pcs)</option>
-                </select>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleAddFoodItem}
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-            >
-              Add to Meal
-            </button>
-          </div>
-        )}
-
-        <ul className="mt-6 space-y-2">
-          {selectedFoodItems.map((item, index) => (
-            <li key={index} className="text-sm text-gray-700 border-b pb-2">
-              Food ID: {item.foodItemId}, Quantity: {item.quantity} {item.unitOfMeasurement}
-            </li>
-          ))}
-        </ul>
-
-        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">
-          Log Meal
+    <div className="space-y-6">
+      {/* Search Bar */}
+      <div className="flex gap-4">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search food items..."
+          className="flex-1 border rounded-md p-2 focus:outline-none focus:ring-2 bg-white focus:ring-green-400"
+        />
+        <button
+          onClick={handleSearch}
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+        >
+          Search
         </button>
-      </form>
+      </div>
+
+      {/* Search Results */}
+      <div className="space-y-2">
+        {results.map((item) => (
+          <div
+            key={item.name}
+            onClick={() => handleSelect(item)}
+            className="cursor-pointer flex justify-between items-center bg-white p-4 rounded-md shadow-sm border hover:bg-gray-50"
+          >
+            <div className="font-semibold text-green-700">{item.name}</div>
+            <div className="text-sm text-gray-600 flex gap-4">
+              <span>🍽 {item.nutritionData.servingSizeGrams}g</span>
+              <span>🔥 {item.nutritionData.calories} kcal</span>
+              <span>🥩 {item.nutritionData.protein}g</span>
+              <span>🍞 {item.nutritionData.carbohydrates}g</span>
+              <span>🧈 {item.nutritionData.fats}g</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Selected Items */}
+      {selectedItems.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="font-semibold text-lg">Meal Details</h3>
+
+          {/* Meal Type Selector */}
+          <div className="flex items-center gap-4">
+            <label className="font-medium">Meal Type:</label>
+            <select
+              value={mealType}
+              onChange={(e) => setMealType(e.target.value)}
+              className="border rounded px-2 py-1"
+            >
+              {mealTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Selected Food Items */}
+          {selectedItems.map((item, index) => (
+            <div
+              key={item.name}
+              className="flex items-center gap-4 bg-gray-50 p-4 rounded-md border"
+            >
+              <div className="flex-1">
+                <div className="font-medium">{item.name}</div>
+                <div className="text-xs text-gray-500">
+                  {item.nutritionData.calories} kcal •{" "}
+                  {item.nutritionData.protein}g protein •{" "}
+                  {item.nutritionData.carbohydrates}g carbs •{" "}
+                  {item.nutritionData.fats}g fat
+                </div>
+              </div>
+
+              <input
+                type="number"
+                min={0}
+                value={item.quantity}
+                onChange={(e) =>
+                  updateItem(index, "quantity", Number(e.target.value))
+                }
+                className="w-20 border rounded px-2 py-1"
+              />
+
+              <select
+                value={item.unit}
+                onChange={(e) => updateItem(index, "unit", e.target.value)}
+                className="border rounded px-2 py-1"
+              >
+                {measurementUnits.map((unit) => (
+                  <option key={unit} value={unit}>
+                    {unit}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                onClick={() => handleRemove(index)}
+                className="text-red-500 text-sm hover:underline"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+
+          <button
+            onClick={handleLogMeal}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Log Meal
+          </button>
+        </div>
+      )}
     </div>
   );
-}
+};

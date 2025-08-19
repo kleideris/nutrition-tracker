@@ -8,6 +8,7 @@ export interface NutritionDataDto {
 }
 
 export interface FoodItemDto {
+  id?: number;
   name: string;
   nutritionData: NutritionDataDto;
 }

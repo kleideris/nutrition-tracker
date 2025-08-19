@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { type FoodItemDto } from "@/dto/FoodItemDto";
 import { toast } from "sonner";
+import { fetchWithAuth } from "@/api/fetchWithAuth";
 
 export const SearchFoodItems: React.FC = () => {
   const [query, setQuery] = useState("");
@@ -14,7 +15,7 @@ export const SearchFoodItems: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`${apiUrl}/food-items/search?query=${encodeURIComponent(query.trim())}`,
+      const res = await fetchWithAuth(`/food-items/search?query=${encodeURIComponent(query.trim())}`,
         {
           method: "GET",
           headers: {
@@ -46,7 +47,7 @@ export const SearchFoodItems: React.FC = () => {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Search food items..."
-          className="flex-1 border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="flex-1 border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-400 bg-white/80"
         />
         <button
           onClick={handleSearch}
@@ -64,11 +65,11 @@ export const SearchFoodItems: React.FC = () => {
           >
             <div className="font-semibold text-green-700">{item.name}</div>
             <div className="text-sm text-gray-600 flex gap-4">
-              <span>🍽 {item.nutritionData.servingSizeGrams}g</span>
-              <span>🔥 {item.nutritionData.calories} kcal</span>
-              <span>🥩 {item.nutritionData.protein}g</span>
-              <span>🍞 {item.nutritionData.carbohydrates}g</span>
-              <span>🧈 {item.nutritionData.fats}g</span>
+              <span>🍽 serving's grams {item.nutritionData.servingSizeGrams}g</span>
+              <span>🔥 calories {item.nutritionData.calories} kcal</span>
+              <span>🥩 protein {item.nutritionData.protein}g</span>
+              <span>🍞 carbs {item.nutritionData.carbohydrates}g</span>
+              <span>🧈 fats {item.nutritionData.fats}g</span>
             </div>
           </div>
         ))}

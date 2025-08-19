@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
-import BackButton from "@/components/BackButton";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -27,7 +26,6 @@ export default function UserProfile() {
 
   return (
     <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow">
-      <BackButton />
       <h2 className="text-2xl font-semibold mb-6 border-b pb-2">👤 Profile Information</h2>
 
       {userDetails ? (

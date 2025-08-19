@@ -11,7 +11,7 @@ export default function FoodItemForm({ formData, setFormData, onSubmit }: Props)
   return (
     <form
       onSubmit={onSubmit}
-      className="bg-white border border-gray-200 rounded-lg p-6 shadow-md grid grid-cols-1 md:grid-cols-2 gap-6"
+      className="bg-white/80 border border-gray-200 rounded-lg p-6 shadow-md grid grid-cols-1 md:grid-cols-2 gap-6"
     >
       {/* Food Name */}
       <div>
