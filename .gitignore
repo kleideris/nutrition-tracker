@@ -21,7 +21,7 @@ secrets.json
 .env.example
 
 # Entity Framework
-Migrations/
+# Migrations/
 *.sqlite
 
 # Ignore Visual Studio solution files during early development
