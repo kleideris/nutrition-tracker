@@ -1,17 +1,23 @@
-#!/bin/bash
+echo "⚠️ Running entrypoint.sh..."
+
 
 # Start SQL Server in the background
 /opt/mssql/bin/sqlservr &
 
 # Wait until SQL Server is ready
-echo "Waiting for SQL Server to start..."
+echo "⚠️ Waiting for SQL Server to start..."
 until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'kX57981630!' -Q "SELECT 1" &> /dev/null
 do
-  sleep 2
+  sleep 5
 done
 
-echo "SQL Server is up. Running init.sql..."
-/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'kX57981630!' -i /init.sql
+echo "⚠️ Contents of init.sql:"
+cat /init.sql
 
-echo "Initialization complete. Bringing SQL Server to foreground..."
+
+echo "⚠️ SQL Server is up. Running init.sql..."
+/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'kX57981630!' -i /init.sql || echo "⚠️ sqlcmd failed"
+
+
+echo "⚠️ Initialization complete. Bringing SQL Server to foreground..."
 wait

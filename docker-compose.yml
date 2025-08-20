@@ -36,8 +36,8 @@ services:
       - sqlserver
     networks:
       - backendnet
-    env_file:
-      - ./server-backend/NutritionTracker.Api/.env
+    # env_file:
+    #   - ./server-backend/NutritionTracker.Api/.env
 
   frontend:
     build:
