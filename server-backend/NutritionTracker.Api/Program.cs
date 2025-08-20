@@ -171,7 +171,8 @@ namespace NutritionTracker.Api
 
 
 
-            // Used for docker to solve the problem of db not being ready before the backend was trying to access it.
+            // Startup routine to prepare the database in Docker environments: - Applies migrations to initialize or update schema - Continues gracefully if DB already exists
+            // - Seeds an admin user if missing
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
@@ -188,7 +189,7 @@ namespace NutritionTracker.Api
                     Console.WriteLine("ℹ️ Continuing startup — database may already exist or be partially initialized.");
                 }
 
-                // Safe to seed after migration attempt
+                //seeds an admin if none is present after migration attempt
                 AdminSeeder.Seed(scope.ServiceProvider);
             }
 
@@ -198,14 +199,13 @@ namespace NutritionTracker.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(/*c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "NutritionTracker API V1"); }*/);
             }
-            
-            // Redirects http requests to https
-            app.UseHttpsRedirection();
-
 
             // Applies CORS rules
             app.UseCors("AllowAll");
-              
+
+            // Redirects http requests to https    <---- commented out in dev since it requires a certificate to conenct with https
+            //app.UseHttpsRedirection();
+
 
             // Applies Authentication middleware
             app.UseAuthentication();
