@@ -4,10 +4,11 @@ import react from '@vitejs/plugin-react'
 import dotenv from 'dotenv';
 import path from 'path';
 
-console.log("Using port:", process.env.PORT);
 
 // Load environment variables from .env file
 dotenv.config();
+
+// console.log("Using port:", process.env.VITE_PORT);
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -21,8 +22,8 @@ export default defineConfig({
     },
   },
   server: {
-    // open: true, // This opens the browser automatically
-    port: parseInt(process.env.PORT ?? '5173'), // This sets the frontend port from the .env
+    open: true, // This opens the browser automatically
+    port: parseInt(process.env.VITE_PORT ?? '5173'), // This sets the frontend port from the .env
     // proxy: {
     //   '/api': {
     //   target: 'http://localhost:5000',
