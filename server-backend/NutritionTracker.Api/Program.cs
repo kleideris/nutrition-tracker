@@ -179,16 +179,16 @@ namespace NutritionTracker.Api
                 try
                 {
                     Console.WriteLine("🛠️ Applying migrations...");
-                    dbContext.Database.Migrate(); // This creates the DB and tables
-                    Console.WriteLine("✅ Migrations applied.");
+                    dbContext.Database.Migrate();
+                    Console.WriteLine("✅ Migrations applied successfully.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("❌ Migration failed: " + ex.Message);
+                    Console.WriteLine("⚠️ Migration encountered an issue: " + ex.Message);
+                    Console.WriteLine("ℹ️ Continuing startup — database may already exist or be partially initialized.");
                 }
 
-                // ✅ Now it's safe to seed
-                // Automatically create an admin on startup if there isnt any in the db
+                // Safe to seed after migration attempt
                 AdminSeeder.Seed(scope.ServiceProvider);
             }
 
