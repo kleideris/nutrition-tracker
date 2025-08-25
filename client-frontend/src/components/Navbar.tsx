@@ -1,7 +1,11 @@
 // src/components/Navbar.tsx
+import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 
 export default function Navbar() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "Admin"
+
   return (
     <aside className="w-64 bg-gray-800 text-white p-6 space-y-6 min-h-screen">
       <h2 className="text-2xl font-bold text-center">Nutrition Tracker</h2>
@@ -30,6 +34,14 @@ export default function Navbar() {
         >
           👤 Profile
         </Link>
+        {isAdmin && (
+          <Link
+            to="/dashboard/users"
+            className="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600 transition"
+          >
+            🧑‍💼 Users
+          </Link>
+        )}
       </nav>
     </aside>
   );

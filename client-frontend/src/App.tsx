@@ -14,6 +14,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import MyMealsPage from './pages/MyMealsPage';
 import DashboardWelcome from './components/DashboardWelcome';
 import LogMealPage from './pages/LogMealPage';
+import UsersPage from './pages/UsersPage';
 
 
 const App = () => {
@@ -35,6 +36,7 @@ const App = () => {
                     <Route path="my-meals" element={<MyMealsPage />} />
                     <Route path="food-items" element={<FoodItemsPage />} />
                     <Route path="profile" element={<UserProfilePage />} />
+                    <Route path="users" element={<UsersPage />} />
                   </Route>
                 </Route>
 
