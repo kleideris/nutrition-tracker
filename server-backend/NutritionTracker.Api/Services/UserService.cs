@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using NutritionTracker.Api.Core.Enums;
 using NutritionTracker.Api.Core.Filters;
 using NutritionTracker.Api.Core.Helpers;
 using NutritionTracker.Api.Data;
@@ -44,7 +45,6 @@ namespace NutritionTracker.Api.Services
         }
 
 
-        //Finished--
         public async Task<RegisterResult> RegisterAsync(RegisterUserDto dto)
         {
             var existingUser = await _unitOfWork.UserRepository.GetByUsernameAsync(dto.Username!);
@@ -82,12 +82,45 @@ namespace NutritionTracker.Api.Services
             await _unitOfWork.SaveAsync();
 
             _logger.LogInformation("User Updated: {UserId}", user.Id);
-            
+
             return user;
         }
 
+
+        public async Task<User> UpdateUserRoleAsync(User user, UpdateUserRoleDto dto)
+        {
+            UserRole role = user.UserRole;
+            if (role == UserRole.Admin)
+            {
+                int adminCount = await _unitOfWork.UserRepository.GetCountByRoleAsync(role);
+                if (adminCount <= 1 && dto.NewRole != UserRole.Admin)
+                    throw new AppException("InvalidUpdate", "Cannot demote the last remaining admin.");
+            }
+
+            user.UserRole = dto.NewRole;
+
+            await _unitOfWork.UserRepository.UpdateAsync(user);
+            await _unitOfWork.SaveAsync();
+
+            _logger.LogInformation("User role updated to {NewRole} for User ID {UserId}", dto.NewRole, user.Id);
+
+            return user;
+        }
+
+
         public async Task<bool> DeleteUserAsync(int id)
         {
+            User? user = await _unitOfWork.UserRepository.GetAsync(id) ??
+                throw new EntityNotFoundException("User", "User with id: " + id + " could not be found"); ;
+            UserRole role = user.UserRole;
+
+            if (role == UserRole.Admin)
+            {
+                int adminCount = await _unitOfWork.UserRepository.GetCountByRoleAsync(role);
+                if (adminCount <= 1)
+                    throw new AppException("InvalidDeletion", "Cannot delete the last remaining admin.");
+            }
+
             bool deleted = await _unitOfWork.UserRepository.DeleteAsync(id);
             await _unitOfWork.SaveAsync();
 
@@ -95,6 +128,9 @@ namespace NutritionTracker.Api.Services
 
             return deleted;
         }
+
+
+        public async Task<int> GetCountByRoleAsync(UserRole role) => await _unitOfWork.UserRepository.GetCountByRoleAsync(role);
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NutritionTracker.Api.Core.Enums;
 using NutritionTracker.Api.Core.Security;
 using NutritionTracker.Api.Data;
 using NutritionTracker.Api.Repositories.Interfaces;
@@ -100,5 +101,14 @@ namespace NutritionTracker.Api.Repositories
         /// <returns><c>true</c> if the email exists; otherwise, <c>false</c>.</returns>
         /// 
         public async Task<bool> EmailExistsAsync(string? email) => await context.Users.AnyAsync(u => u.Email == email);
+
+
+        /// <summary>
+        /// Asynchronously counts the number of users with the specified role.
+        /// </summary>
+        /// <param name="role">The <see cref="UserRole"/> to filter users by.</param>
+        /// <returns>An <see cref="int"/> representing the total number of users who match the given role.</returns>
+        /// 
+        public async Task<int> GetCountByRoleAsync(UserRole role) => await context.Users.CountAsync(u => u.UserRole == role);
     }
 }

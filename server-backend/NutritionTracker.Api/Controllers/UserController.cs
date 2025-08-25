@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NutritionTracker.Api.Core.Enums;
 using NutritionTracker.Api.Core.Filters;
+using NutritionTracker.Api.Data;
 using NutritionTracker.Api.DTOs;
 using NutritionTracker.Api.Exceptions;
 using NutritionTracker.Api.Services;
@@ -45,11 +47,12 @@ namespace NutritionTracker.Api.Controllers
             return CreatedAtAction(nameof(Register), new { id = result.UserId }, new { message = "User registered successfully" });
         }
 
+
         /// <summary>
         /// Updates the details of an existing user identified by their username.
         /// Accessible to users with the "Admin" role or the user themselves.
         /// </summary>
-        /// <param name="username">The username of the user to update.</param>
+        /// <param name="id">The username of the user to update.</param>
         /// <param name="dto">The updated user information.</param>
         /// <returns>Returns the updated user data.</returns>
         /// <response code="200">Returns the updated user data if successful.</response>
@@ -59,24 +62,45 @@ namespace NutritionTracker.Api.Controllers
         /// Thrown when the specified user cannot be found.
         /// </exception>
         /// 
-        [HttpPatch("{username}")]
+        [HttpPatch("{id}")]
         [Authorize]
-        public async Task<IActionResult> Update(string username, [FromBody] UpdateUserDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
         {
-            if (AppUser == null)
-                return Unauthorized();
-
-            if (AppUser?.Username != username && !User.IsInRole("Admin"))
+            if (AppUser?.Id != id && !User.IsInRole("Admin"))
                 return Forbid("You can only update your own profile.");
 
-            var user = await _applicationService.UserService.GetByUsernameAsync(username);
+            var user = await _applicationService.UserService.GetByIdAsync(id);
             if (user == null)
-                throw new EntityNotFoundException("User", "User with username " + username + " could not be found.");
+                throw new EntityNotFoundException("User", "User with id " + id + " could not be found.");
 
             user = await _applicationService.UserService.UpdateAsync(user, dto);
             var returnedDto = _mapper.Map<UpdateUserDto>(user);
 
             return Ok(new { status = true, data = returnedDto });
+        }
+
+
+        /// <summary>
+        /// Updates the role of a user with the specified ID.
+        /// </summary>
+        /// <param name="id">The ID of the user whose role is being updated.</param>
+        /// <param name="dto">An object containing the new role to assign to the user.</param>
+        /// <returns>
+        /// Returns a 200 OK response with a confirmation message if successful.
+        /// Returns 404 Not Found if the user does not exist.
+        /// Returns 403 Forbidden if the requester is not authorized.
+        /// </returns>
+        /// 
+        [HttpPatch("{id}/role")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateUserRole(int id, [FromBody] UpdateUserRoleDto dto)
+        {
+            var user = await _applicationService.UserService.GetByIdAsync(id) ??
+                throw new EntityNotFoundException("User", "User with id " + id + " could not be found.");
+
+            await _applicationService.UserService.UpdateUserRoleAsync(user, dto);
+
+            return Ok(new { message = $"User role updated to {dto.NewRole}." });
         }
 
 
@@ -159,6 +183,17 @@ namespace NutritionTracker.Api.Controllers
 
             return Ok(users);
         }
+
+
+
+        [HttpGet("admin-count")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAdminCount()
+        {
+            int count = await _applicationService.UserService.GetCountByRoleAsync(UserRole.Admin);
+            return Ok(count);
+        }
+
     }
 }
 
