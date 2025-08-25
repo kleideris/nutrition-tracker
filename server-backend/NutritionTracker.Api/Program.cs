@@ -31,7 +31,15 @@ namespace NutritionTracker.Api
 
             // Register Entity Framework Core with SQL Server context with DI using config connection string
             var connString = builder.Configuration["ConnectionStrings:DefaultConnection"];
-            builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connString));  // AddDbContext is scoped - per request, a new instance is created
+            builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connString, sqlOptions =>  // AddDbContext is scoped - per request, a new instance is created
+                {
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5, // Number of retries
+                        maxRetryDelay: TimeSpan.FromSeconds(10), // Delay between retries
+                        errorNumbersToAdd: null // Optional: specific SQL error codes to retry on
+                    );
+                })
+            );  
 
 
             // AutoMapper setup. Automatically registers all AutoMapper profiles found in the same assembly as MapperConfig
