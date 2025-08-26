@@ -2,9 +2,8 @@ import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
 import { toast } from "sonner";
-import { FaBreadSlice, FaCheese, FaDrumstickBite, FaEdit, FaFireAlt, FaTrashAlt } from "react-icons/fa";
 import { LogMealForm } from "./LogMealForm";
-import { Icons, iconStyles } from "./icons";
+import { Icons } from "./icons";
 
 interface Meal {
   id: number;

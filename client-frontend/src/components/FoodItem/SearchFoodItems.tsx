@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { type FoodItemDto } from "@/dto/FoodItemDto";
 import { toast } from "sonner";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
-import { FaUtensils, FaFireAlt, FaDrumstickBite, FaBreadSlice, FaCheese } from "react-icons/fa";
 import { Icons } from "../icons";
 
 export const SearchFoodItems: React.FC = () => {
