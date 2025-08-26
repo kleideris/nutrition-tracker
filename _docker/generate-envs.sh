@@ -11,16 +11,21 @@ echo "🔧 Starting env generation..."
 
 # 🧼 Sanitize .env file
 if command -v dos2unix >/dev/null 2>&1; then
-  dos2unix .env
+  dos2unix ../.env
 else
-  sed -i 's/\r$//' .env
+  sed -i 's/\r$//' ../.env
 fi
 
 
-# ✅ Load variables
-set -a
-source .env
-set +a
+# ✅ Load variables safely
+while IFS='=' read -r key value; do
+  [[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+  key=$(echo "$key" | xargs)
+  value=$(echo "$value" | xargs)
+  export "$key=$value"
+done < ../.env
+
+
 
 
 # 🔍 Check required variables
@@ -43,12 +48,12 @@ fi
 
 
 # 📦 Create frontend/.env
-frontend_env="client-frontend/.env"
+frontend_env="../client-frontend/.env"
 echo -e "VITE_PORT=$VITE_PORT\nVITE_API_URL=$VITE_API_URL" > "$frontend_env"
 echo "✅ $frontend_env created."
 
 
 # 📦 Create backend/.env
-backend_env="server-backend/NutritionTracker.Api/.env"
-echo -e "JWT_SECRET=$JWT_SECRET\nSA_PASSWORD=$SA_PASSWORD\nDB_CONNECTION=\"$DB_CONNECTION\"" > "$backend_env"
+backend_env="../server-backend/NutritionTracker.Api/.env"
+echo -e "JWT_SECRET=$JWT_SECRET\nSA_PASSWORD=$SA_PASSWORD\nDB_CONNECTION=$DB_CONNECTION" > "$backend_env"
 echo "✅ $backend_env created."
