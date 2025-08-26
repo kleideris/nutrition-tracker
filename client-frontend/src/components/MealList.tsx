@@ -2,7 +2,9 @@ import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
 import { toast } from "sonner";
-import { MealForm } from "./LogMealForm";
+import { FaBreadSlice, FaCheese, FaDrumstickBite, FaEdit, FaFireAlt, FaTrashAlt } from "react-icons/fa";
+import { LogMealForm } from "./LogMealForm";
+import { Icons, iconStyles } from "./icons";
 
 interface Meal {
   id: number;
@@ -75,7 +77,7 @@ const MealList = () => {
       {editingMeal && (
         <div className="fixed inset-0 backdrop-blur-sm bg-white/10 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
-            <MealForm
+            <LogMealForm
               mode="edit"
               initialMeal={editingMeal}
               onSuccess={() => {
@@ -109,21 +111,24 @@ const MealList = () => {
                 <div className="space-x-2">
                   <button
                     onClick={() => setEditingMeal(meal)}
-                    className="text-blue-600 hover:underline text-sm"
+                    aria-label="Edit meal"
                   >
-                    Edit
+                    <Icons.Edit />
                   </button>
                   <button
                     onClick={() => deleteMeal(meal.id)}
-                    className="text-red-600 hover:underline text-sm"
+                    aria-label="Delete meal"
                   >
-                    Delete
+                    <Icons.Delete />
                   </button>
                 </div>
               </div>
 
-              <div className="mt-2 text-sm">
-                🔥 {meal.totalCalories.toFixed(1)} kcal • 🥩 {meal.totalProtein.toFixed(1)}g protein • 🍞 {meal.totalCarbs.toFixed(1)}g carbs • 🧈 {meal.totalFats.toFixed(1)}g fat
+              <div className="mt-2 text-sm flex flex-wrap gap-4 items-center">
+                <span className="flex items-center gap-1"><Icons.Calories /> {meal.totalCalories.toFixed(1)} kcal</span>
+                <span className="flex items-center gap-1"><Icons.Protein /> {meal.totalProtein.toFixed(1)}g protein</span>
+                <span className="flex items-center gap-1"><Icons.Carbs /> {meal.totalCarbs.toFixed(1)}g carbs</span>
+                <span className="flex items-center gap-1"><Icons.Fats /> {meal.totalFats.toFixed(1)}g fat</span>
               </div>
 
               {meal.foodItems?.length > 0 ? (
@@ -131,12 +136,15 @@ const MealList = () => {
                   {meal.foodItems.map((item, index) => (
                     <li key={index} className="ml-4 list-disc">
                       {item.foodName ?? `Food #${item.foodItemId}`} – {item.quantity} {item.unitOfMeasurement}
-                      {item.calories && (
-                        <span className="text-xs text-gray-500">
-                          {" "}
-                          • {item.calories} kcal • {item.protein}g protein • {item.carbs}g carbs • {item.fats}g fat
+                      {/* Nutrition for each individual food item in every meal */}
+                      {/* {item.calories && (
+                        <span className="text-xs text-gray-500 flex gap-2 flex-wrap items-center">
+                          <span className="flex items-center gap-1"><Icons.Calories className={iconStyles.gray} /> {item.calories} kcal</span>
+                          <span className="flex items-center gap-1"><Icons.Protein className={iconStyles.gray} /> {item.protein}g</span>
+                          <span className="flex items-center gap-1"><Icons.Calories className={iconStyles.gray} /> {item.carbs}g</span>
+                          <span className="flex items-center gap-1"><Icons.Fats className={iconStyles.gray} /> {item.fats}g</span>
                         </span>
-                      )}
+                      )} */}
                     </li>
                   ))}
                 </ul>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { type FoodItemDto } from "@/dto/FoodItemDto";
 import { toast } from "sonner";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
+import { Icons } from "../icons";
 
 type Props = {
   apiUrl: string;
@@ -92,12 +93,27 @@ const RemoveFoodItem: React.FC<Props> = ({ apiUrl }) => {
             >
               <div>
                 <div className="font-semibold text-green-700">{item.name}</div>
-                <div className="text-sm text-gray-600 flex gap-4">
-                  <span>🍽 serving {item.nutritionData.servingSizeGrams}g</span>
-                  <span>🔥 calories {item.nutritionData.calories} kcal</span>
-                  <span>🥩 protein {item.nutritionData.protein}g</span>
-                  <span>🍞 carbs {item.nutritionData.carbohydrates}g</span>
-                  <span>🧈 fats {item.nutritionData.fats}g</span>
+                <div className="text-sm text-gray-600 flex gap-4 items-center flex-wrap">
+                  <span className="flex items-center gap-1">
+                    <Icons.Serving />
+                    serving {item.nutritionData.servingSizeGrams}g
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Icons.Calories />
+                    {item.nutritionData.calories} kcal
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Icons.Protein />
+                    {item.nutritionData.protein}g protein
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Icons.Carbs />
+                    {item.nutritionData.carbohydrates}g carbs
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Icons.Fats />
+                    {item.nutritionData.fats}g fats
+                  </span>
                 </div>
               </div>
               <button

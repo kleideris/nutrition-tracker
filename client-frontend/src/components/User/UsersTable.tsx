@@ -1,4 +1,5 @@
 import type { Props } from "@/types/user";
+import { Icons } from "../icons";
 
 export function UsersTable({ users, onEdit, onDelete }: Props) {
   return (
@@ -25,18 +26,20 @@ export function UsersTable({ users, onEdit, onDelete }: Props) {
               <td className="p-2 truncate max-w-[150px]" title={user.lastname}>{user.lastname}</td>
               <td className="p-2 border-r">{user.role}</td>
               <td className="p-2 truncate max-w-[150px]">
-                <button
-                  className="text-blue-600 hover:underline mr-2"
-                  onClick={() => onEdit(user)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="text-red-600 hover:underline"
-                  onClick={() => onDelete(user.id)}
-                >
-                  Delete
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => onEdit(user)}
+                    aria-label="Edit user"
+                  >
+                    <Icons.Edit />
+                  </button>
+                  <button
+                    onClick={() => onDelete(user.id)}
+                    aria-label="Delete user"
+                  >
+                    <Icons.Delete />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

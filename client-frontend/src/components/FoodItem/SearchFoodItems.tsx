@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { type FoodItemDto } from "@/dto/FoodItemDto";
 import { toast } from "sonner";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
+import { FaUtensils, FaFireAlt, FaDrumstickBite, FaBreadSlice, FaCheese } from "react-icons/fa";
+import { Icons } from "../icons";
 
 export const SearchFoodItems: React.FC = () => {
   const [query, setQuery] = useState("");
@@ -64,12 +66,27 @@ export const SearchFoodItems: React.FC = () => {
             className="flex justify-between items-center bg-white p-4 rounded-md shadow-sm border"
           >
             <div className="font-semibold text-green-700">{item.name}</div>
-            <div className="text-sm text-gray-600 flex gap-4">
-              <span>🍽 serving's grams {item.nutritionData.servingSizeGrams}g</span>
-              <span>🔥 calories {item.nutritionData.calories} kcal</span>
-              <span>🥩 protein {item.nutritionData.protein}g</span>
-              <span>🍞 carbs {item.nutritionData.carbohydrates}g</span>
-              <span>🧈 fats {item.nutritionData.fats}g</span>
+            <div className="text-sm text-gray-600 flex gap-4 items-center flex-wrap">
+              <span className="flex items-center gap-1">
+                <Icons.Serving />
+                serving's grams {item.nutritionData.servingSizeGrams}g
+              </span>
+              <span className="flex items-center gap-1">
+                <Icons.Calories />
+                calories {item.nutritionData.calories} kcal
+              </span>
+              <span className="flex items-center gap-1">
+                <Icons.Protein />
+                protein {item.nutritionData.protein}g
+              </span>
+              <span className="flex items-center gap-1">
+                <Icons.Carbs />
+                carbs {item.nutritionData.carbohydrates}g
+              </span>
+              <span className="flex items-center gap-1">
+                <Icons.Fats />
+                fats {item.nutritionData.fats}g
+              </span>
             </div>
           </div>
         ))}

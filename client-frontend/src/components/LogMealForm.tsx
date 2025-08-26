@@ -28,14 +28,13 @@ interface MealFormProps {
 const measurementUnits = ["g", "serving"];
 const mealTypes = ["Breakfast", "Lunch", "Dinner", "Snack"];
 
-export const MealForm = ({ mode, initialMeal, onSuccess }: MealFormProps) => {
+export const LogMealForm = ({ mode, initialMeal, onSuccess }: MealFormProps) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<FoodItemDto[]>([]);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [mealType, setMealType] = useState("Lunch");
   const [timestamp, setTimestamp] = useState(new Date().toISOString());
 
-  const apiUrl = import.meta.env.VITE_API_URL;
   const auth = useContext(AuthContext);
   const { user } = auth ?? {};
 
@@ -66,7 +65,7 @@ export const MealForm = ({ mode, initialMeal, onSuccess }: MealFormProps) => {
       const res = await fetchWithAuth(`/food-items/search?query=${encodeURIComponent(query.trim())}`);
       const data = await res.json();
       setResults(data);
-    } catch (err) {
+    } catch {
       toast.error("Search failed.");
     }
   };
@@ -126,7 +125,7 @@ export const MealForm = ({ mode, initialMeal, onSuccess }: MealFormProps) => {
       toast.success(mode === "create" ? "Meal logged!" : "Meal updated!");
       setSelectedItems([]);
       onSuccess?.();
-    } catch (err) {
+    } catch {
       toast.error("Failed to submit meal.");
     }
   };

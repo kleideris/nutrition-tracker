@@ -4,7 +4,7 @@ import DashboardContentWrapper from "@/components/DashboardContentWrapper";
 export default function UserProfilePage() {
   return (
     <DashboardContentWrapper>
-      <LogMealForm />
+      <LogMealForm mode={"create"} />
     </DashboardContentWrapper>
   );
 }
