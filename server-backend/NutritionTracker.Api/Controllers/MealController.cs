@@ -23,40 +23,6 @@ namespace NutritionTracker.Api.Controllers
         private readonly IMapper _mapper = mapper;
 
 
-
-        /// <summary>
-        /// Logs a new meal for a user with the specified meal type and food items.
-        /// </summary>
-        /// <param name="mealType">The type of meal being logged (e.g., Breakfast, Lunch, Dinner).</param>
-        /// <param name="dto">The data transfer object containing user ID, timestamp, and food items.</param>
-        /// <returns>
-        /// Returns <see cref="OkObjectResult"/> with the created meal and its aggregated nutrition data if successful.
-        /// Returns <see cref="BadRequestObjectResult"/> if meal creation fails.
-        /// </returns>
-        /// 
-        [HttpPost("meal-type/{mealType}")]
-        [Authorize]
-        public async Task<IActionResult> Add(MealType mealType, [FromBody] AddMealDto dto)
-        {
-            var existingMeals = await _applicationService.MealService.GetByUserAsync(dto.UserId);
-
-            var createdMeal = await _applicationService.MealService.AddAsync(mealType, dto);
-            if (createdMeal == null)
-                return BadRequest(new { message = "Failed to log meal." });
-
-            var mealDto = _mapper.Map<MealReadOnlyDto>(createdMeal);
-
-            // Adds aggregated nutrition manually
-            var aggregated = _applicationService.NutritionService.CalculateNutrition(createdMeal);
-            mealDto.TotalCalories = aggregated.TotalCalories;
-            mealDto.TotalProtein = aggregated.TotalProtein;
-            mealDto.TotalCarbs = aggregated.TotalCarbs;
-            mealDto.TotalFats = aggregated.TotalFats;
-
-            return Ok(new { message = "Meal logged successfully", meal = mealDto });
-        }
-
-
         /// <summary>
         /// Retrieves a specific meal by its unique identifier.
         /// </summary>
@@ -130,31 +96,35 @@ namespace NutritionTracker.Api.Controllers
 
 
         /// <summary>
-        /// Deletes a specific meal and all its associated food items.
+        /// Logs a new meal for a user with the specified meal type and food items.
         /// </summary>
-        /// <param name="mealId">The unique identifier of the meal to delete.</param>
+        /// <param name="mealType">The type of meal being logged (e.g., Breakfast, Lunch, Dinner).</param>
+        /// <param name="dto">The data transfer object containing user ID, timestamp, and food items.</param>
         /// <returns>
-        /// Returns <see cref="OkResult"/> with a success message if deletion is successful.
-        /// Returns <see cref="BadRequestObjectResult"/> if deletion fails or model state is invalid.
+        /// Returns <see cref="OkObjectResult"/> with the created meal and its aggregated nutrition data if successful.
+        /// Returns <see cref="BadRequestObjectResult"/> if meal creation fails.
         /// </returns>
         /// 
-        [HttpDelete("{mealId}")]
+        [HttpPost("meal-type/{mealType}")]
         [Authorize]
-        public async Task<IActionResult> deleteAsync(int mealId)
+        public async Task<IActionResult> Add(MealType mealType, [FromBody] AddMealDto dto)
         {
-            bool success = await _applicationService.MealService.DeleteAsync(mealId);
+            var existingMeals = await _applicationService.MealService.GetByUserAsync(dto.UserId);
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var createdMeal = await _applicationService.MealService.AddAsync(mealType, dto);
+            if (createdMeal == null)
+                return BadRequest(new { message = "Failed to log meal." });
 
-            if (!success)
-            {
-                return BadRequest(new { message = "Failed to delete meal" });
-            }
+            var mealDto = _mapper.Map<MealReadOnlyDto>(createdMeal);
 
-            return Ok(new { message = "meal deleted successfully" });
+            // Adds aggregated nutrition manually
+            var aggregated = _applicationService.NutritionService.CalculateNutrition(createdMeal);
+            mealDto.TotalCalories = aggregated.TotalCalories;
+            mealDto.TotalProtein = aggregated.TotalProtein;
+            mealDto.TotalCarbs = aggregated.TotalCarbs;
+            mealDto.TotalFats = aggregated.TotalFats;
+
+            return Ok(new { message = "Meal logged successfully", meal = mealDto });
         }
 
 
@@ -185,6 +155,35 @@ namespace NutritionTracker.Api.Controllers
             }
 
             return Ok(new { message = "meal Updated successfully" });
+        }
+
+
+        /// <summary>
+        /// Deletes a specific meal and all its associated food items.
+        /// </summary>
+        /// <param name="mealId">The unique identifier of the meal to delete.</param>
+        /// <returns>
+        /// Returns <see cref="OkResult"/> with a success message if deletion is successful.
+        /// Returns <see cref="BadRequestObjectResult"/> if deletion fails or model state is invalid.
+        /// </returns>
+        /// 
+        [HttpDelete("{mealId}")]
+        [Authorize]
+        public async Task<IActionResult> deleteAsync(int mealId)
+        {
+            bool success = await _applicationService.MealService.DeleteAsync(mealId);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!success)
+            {
+                return BadRequest(new { message = "Failed to delete meal" });
+            }
+
+            return Ok(new { message = "meal deleted successfully" });
         }
     }
 }

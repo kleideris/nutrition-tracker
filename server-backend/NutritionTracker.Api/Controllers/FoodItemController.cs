@@ -21,7 +21,35 @@ namespace NutritionTracker.Api.Controllers
 
 
         /// <summary>
-        /// Adds a new food item to the tracker.
+        /// Searches for food items by name.
+        /// </summary>
+        /// <param name="query">The search query string. If null or empty, all items are returned.</param>
+        /// <returns>
+        /// A list of matching food items as <see cref="FoodItemDto"/> objects.
+        /// </returns>
+        /// 
+        [HttpGet("search")]
+        [Authorize]
+        public async Task<IActionResult> SearchFoodItems([FromQuery] string? query)
+        {
+            List<FoodItem> matches;
+
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                matches = await _applicationService.FoodItemService.GetAllAsync();
+            }
+            else
+            {
+                matches = await _applicationService.FoodItemService.SearchByNameAsync(query);
+            }
+
+            var returnedDtos = matches.Select(f => _mapper.Map<FoodItemDto>(f)).ToList();
+            return Ok(returnedDtos);
+        }
+
+
+        /// <summary>
+        /// Adds a new food item.
         /// </summary>
         /// <param name="dto">The food item data transfer object.</param>
         /// <returns>
@@ -73,34 +101,6 @@ namespace NutritionTracker.Api.Controllers
             }
 
             return Ok(new { message = "food item logged successfully" });
-        }
-
-
-        /// <summary>
-        /// Searches for food items by name.
-        /// </summary>
-        /// <param name="query">The search query string. If null or empty, all items are returned.</param>
-        /// <returns>
-        /// A list of matching food items as <see cref="FoodItemDto"/> objects.
-        /// </returns>
-        /// 
-        [HttpGet("search")]
-        [Authorize]
-        public async Task<IActionResult> SearchFoodItems([FromQuery] string? query)
-        {
-            List<FoodItem> matches;
-
-            if (string.IsNullOrWhiteSpace(query))
-            {
-                matches = await _applicationService.FoodItemService.GetAllAsync();
-            }
-            else
-            {
-                matches = await _applicationService.FoodItemService.SearchByNameAsync(query);
-            }
-
-            var returnedDtos = matches.Select(f => _mapper.Map<FoodItemDto>(f)).ToList();
-            return Ok(returnedDtos);
         }
     }
 }

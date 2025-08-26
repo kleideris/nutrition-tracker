@@ -24,6 +24,86 @@ namespace NutritionTracker.Api.Controllers
 
 
         /// <summary>
+        /// Retrieves a user by their unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to retrieve. Must be a positive integer.</param>
+        /// <returns>An <see cref="ActionResult{T}"/> containing a <see cref="UserReadOnlyDto"/> representing the user if found.</returns>
+        /// <exception cref="EntityNotFoundException">Thrown if no user with the specified <paramref name="id"/> exists.</exception>
+        /// 
+        [HttpGet("{id:int}")]
+        [Authorize]
+        public async Task<ActionResult<UserReadOnlyDto>> GetById(int id)
+        {
+            var user = await _applicationService.UserService.GetByIdAsync(id) ?? throw new EntityNotFoundException("User", "User: " + id + " NotFound");
+            var returnedDto = _mapper.Map<UserReadOnlyDto>(user);
+            return Ok(returnedDto);
+        }
+
+
+        /// <summary>
+        /// Retrieves a user by their username.
+        /// </summary>
+        /// <param name="username">The username of the user to retrieve. This value cannot be null or empty.</param>
+        /// <returns>An <see cref="ActionResult{T}"/> containing a <see cref="UserReadOnlyDto"/> representing the user with the
+        /// specified username. If the user is not found, an exception is thrown.</returns>
+        /// <exception cref="EntityNotFoundException">Thrown if no user with the specified <paramref name="username"/> exists.</exception>
+        /// 
+        [HttpGet("username")]
+        [Authorize]
+        public async Task<ActionResult<UserReadOnlyDto>> GetByUsername([FromQuery] string username)
+        {
+            var user = await _applicationService.UserService.GetByUsernameAsync(username) ?? throw new EntityNotFoundException("User", "User: " + username + " NotFound");
+            var returnedDto = _mapper.Map<UserReadOnlyDto>(user);
+            return Ok(returnedDto);
+        }
+
+
+        /// <summary>
+        /// Retrieves a paginated list of users that match the specified filter criteria.
+        /// </summary>
+        /// <remarks>This method supports filtering and pagination to efficiently retrieve subsets of user
+        /// data. Ensure that <paramref name="pageNumber"/> and <paramref name="pageSize"/> are positive integers to
+        /// avoid invalid requests.</remarks>
+        /// <param name="userFilterDTO">An object containing the filter criteria to apply when retrieving users.  This may include properties such
+        /// as name, role, or other user attributes.</param>
+        /// <param name="pageNumber">The page number to retrieve. Must be a positive integer. Defaults to 1.</param>
+        /// <param name="pageSize">The number of users to include in each page. Must be a positive integer. Defaults to 10.</param>
+        /// <returns>An <see cref="IActionResult"/> containing a paginated list of users that match the filter criteria. The
+        /// response is returned as an HTTP 200 OK result with the list of users in the response body.</returns>
+        /// 
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetFilteredPaginated([FromQuery] UserFiltersDTO userFilterDTO, [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var users = await _applicationService.UserService
+                .GetFilteredPaginatedAsync(pageNumber, pageSize, userFilterDTO);
+
+            return Ok(users);
+        }
+
+
+        /// <summary>
+        /// Retrieves the total number of users assigned the "Admin" role.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint is protected and requires the caller to have the "Admin" role.
+        /// It queries the user service to count all users with the Admin role and returns the result.
+        /// </remarks>
+        /// <returns>
+        /// An <see cref="IActionResult"/> containing the count of admin users as an integer.
+        /// </returns>
+        /// 
+        [HttpGet("admin-count")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAdminCount()
+        {
+            int count = await _applicationService.UserService.GetCountByRoleAsync(UserRole.Admin);
+            return Ok(count);
+        }
+
+
+        /// <summary>
         /// Registers a new user with the provided registration details.
         /// </summary>
         /// <remarks>This method validates the provided registration details and attempts to register a
@@ -49,7 +129,7 @@ namespace NutritionTracker.Api.Controllers
 
 
         /// <summary>
-        /// Updates the details of an existing user identified by their username.
+        /// Updates the details of an existing user with the specified ID.
         /// Accessible to users with the "Admin" role or the user themselves.
         /// </summary>
         /// <param name="id">The username of the user to update.</param>
@@ -123,77 +203,6 @@ namespace NutritionTracker.Api.Controllers
 
             return Ok(new { message = $"User with ID {id} was successfully deleted." });
         }
-
-
-        /// <summary>
-        /// Retrieves a user by their unique identifier.
-        /// </summary>
-        /// <param name="id">The unique identifier of the user to retrieve. Must be a positive integer.</param>
-        /// <returns>An <see cref="ActionResult{T}"/> containing a <see cref="UserReadOnlyDto"/> representing the user if found.</returns>
-        /// <exception cref="EntityNotFoundException">Thrown if no user with the specified <paramref name="id"/> exists.</exception>
-        /// 
-        [HttpGet("{id:int}")]
-        [Authorize]
-        public async Task<ActionResult<UserReadOnlyDto>> GetById(int id)
-        {
-            var user = await _applicationService.UserService.GetByIdAsync(id) ?? throw new EntityNotFoundException("User", "User: " + id + " NotFound");
-            var returnedDto = _mapper.Map<UserReadOnlyDto>(user);
-            return Ok(returnedDto);
-        }
-
-
-        /// <summary>
-        /// Retrieves a user by their username.
-        /// </summary>
-        /// <param name="username">The username of the user to retrieve. This value cannot be null or empty.</param>
-        /// <returns>An <see cref="ActionResult{T}"/> containing a <see cref="UserReadOnlyDto"/> representing the user with the
-        /// specified username. If the user is not found, an exception is thrown.</returns>
-        /// <exception cref="EntityNotFoundException">Thrown if no user with the specified <paramref name="username"/> exists.</exception>
-        /// 
-        [HttpGet("username")]
-        [Authorize]
-        public async Task<ActionResult<UserReadOnlyDto>> GetByUsername([FromQuery] string username)
-        {
-            var user = await _applicationService.UserService.GetByUsernameAsync(username) ?? throw new EntityNotFoundException("User", "User: " + username + " NotFound");
-            var returnedDto = _mapper.Map<UserReadOnlyDto>(user);
-            return Ok(returnedDto);
-        }
-
-
-        /// <summary>
-        /// Retrieves a paginated list of users that match the specified filter criteria.
-        /// </summary>
-        /// <remarks>This method supports filtering and pagination to efficiently retrieve subsets of user
-        /// data. Ensure that <paramref name="pageNumber"/> and <paramref name="pageSize"/> are positive integers to
-        /// avoid invalid requests.</remarks>
-        /// <param name="userFilterDTO">An object containing the filter criteria to apply when retrieving users.  This may include properties such
-        /// as name, role, or other user attributes.</param>
-        /// <param name="pageNumber">The page number to retrieve. Must be a positive integer. Defaults to 1.</param>
-        /// <param name="pageSize">The number of users to include in each page. Must be a positive integer. Defaults to 10.</param>
-        /// <returns>An <see cref="IActionResult"/> containing a paginated list of users that match the filter criteria. The
-        /// response is returned as an HTTP 200 OK result with the list of users in the response body.</returns>
-        /// 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetFilteredPaginated([FromQuery] UserFiltersDTO userFilterDTO, [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
-        {
-            var users = await _applicationService.UserService
-                .GetFilteredPaginatedAsync(pageNumber, pageSize, userFilterDTO);
-
-            return Ok(users);
-        }
-
-
-
-        [HttpGet("admin-count")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAdminCount()
-        {
-            int count = await _applicationService.UserService.GetCountByRoleAsync(UserRole.Admin);
-            return Ok(count);
-        }
-
     }
 }
 

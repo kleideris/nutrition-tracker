@@ -10,7 +10,6 @@ namespace NutritionTracker.Api.Controllers
     /// <summary>
     /// Handles login requests and issues JWT tokens for authenticated users.
     /// </summary>
-    /// 
     #endregion
     [Route("api/auth")]
     [ApiController]
@@ -32,7 +31,6 @@ namespace NutritionTracker.Api.Controllers
         /// <exception cref="EntityNotAuthorizedException">
         /// Thrown when username or password is invalid.
         /// </exception>
-        /// 
         #endregion
         [HttpPost("login/access-token")]
         public async Task<ActionResult<JwtTokenDto>> Login([FromBody] LoginUserDto credentials)
