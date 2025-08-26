@@ -27,6 +27,7 @@ namespace NutritionTracker.Api.Services
         /// 
         public async Task<bool> AddAsync(FoodItemDto dto)
         {
+            dto.Name = dto.Name.Trim();
             FoodItem foodItem = _mapper.Map<FoodItem>(dto);
             if (foodItem == null)
             {
@@ -43,7 +44,7 @@ namespace NutritionTracker.Api.Services
             try
             {
                 await _unitOfWork.FoodItemRepository.AddAsync(foodItem);
-                _logger.LogInformation("FoodItem: {foodItem} added successfully", foodItem);  //TODO: check if this needs ToString to work
+                _logger.LogInformation("FoodItem: {foodItem} added successfully", foodItem.Name);
                 await _unitOfWork.SaveAsync();
                 return true;
             }
