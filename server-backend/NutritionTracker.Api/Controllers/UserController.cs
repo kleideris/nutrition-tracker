@@ -34,6 +34,9 @@ namespace NutritionTracker.Api.Controllers
         [Authorize]
         public async Task<ActionResult<UserReadOnlyDto>> GetById(int id)
         {
+            if (AppUser?.Id != id && !User.IsInRole("Admin"))
+                return Forbid("You can only access your own profile.");
+
             var user = await _applicationService.UserService.GetByIdAsync(id) ?? throw new EntityNotFoundException("User", "User: " + id + " NotFound");
             var returnedDto = _mapper.Map<UserReadOnlyDto>(user);
             return Ok(returnedDto);
@@ -52,6 +55,9 @@ namespace NutritionTracker.Api.Controllers
         [Authorize]
         public async Task<ActionResult<UserReadOnlyDto>> GetByUsername([FromQuery] string username)
         {
+            if (AppUser?.Username != username && !User.IsInRole("Admin"))
+                return Forbid("You can only access your own profile.");
+
             var user = await _applicationService.UserService.GetByUsernameAsync(username) ?? throw new EntityNotFoundException("User", "User: " + username + " NotFound");
             var returnedDto = _mapper.Map<UserReadOnlyDto>(user);
             return Ok(returnedDto);
@@ -72,7 +78,7 @@ namespace NutritionTracker.Api.Controllers
         /// response is returned as an HTTP 200 OK result with the list of users in the response body.</returns>
         /// 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetFilteredPaginated([FromQuery] UserFiltersDTO userFilterDTO, [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
         {
