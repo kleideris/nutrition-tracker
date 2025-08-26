@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { type FoodItemDto } from "@/dto/FoodItemDto";
 import { toast } from "sonner";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
@@ -12,8 +12,9 @@ const RemoveFoodItem: React.FC<Props> = ({ apiUrl }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<FoodItemDto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearch = async () => {
+  const handleSearch = async (searchQuery: string) => {
     if (!apiUrl) {
       toast.error("API URL is not configured.");
       return;
@@ -22,7 +23,7 @@ const RemoveFoodItem: React.FC<Props> = ({ apiUrl }) => {
     try {
       setLoading(true);
       const res = await fetchWithAuth(
-        `/food-items/search?query=${encodeURIComponent(query.trim())}`,
+        `/food-items/search?query=${encodeURIComponent(searchQuery.trim())}`,
         {
           method: "GET",
           headers: {
@@ -41,11 +42,27 @@ const RemoveFoodItem: React.FC<Props> = ({ apiUrl }) => {
 
       const data = await res.json();
       setResults(data);
+      setHasSearched(true);
     } catch (err) {
       console.error("Search failed:", err);
       toast.error("Search failed. Please try again.");
+      setHasSearched(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      handleSearch(query);
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [query]);
+
+  const handleFocus = () => {
+    if (!query.trim()) {
+      handleSearch("");
     }
   };
 
@@ -58,7 +75,7 @@ const RemoveFoodItem: React.FC<Props> = ({ apiUrl }) => {
       if (!res.ok) throw new Error("Failed to delete food item");
 
       toast.success(`Removed ${name}`);
-      handleSearch(); // Refresh results
+      handleSearch(query); // Refresh results with current query
     } catch (err) {
       console.error("Error removing food item:", err);
       toast.error("Failed to remove item.");
@@ -71,21 +88,21 @@ const RemoveFoodItem: React.FC<Props> = ({ apiUrl }) => {
         <input
           value={query}
           onChange={e => setQuery(e.target.value)}
+          onFocus={handleFocus}
           placeholder="Search food items..."
           className="flex-1 border rounded-md p-2 focus:outline-none focus:ring-2 bg-white/80 focus:ring-green-400"
         />
-        <button
-          onClick={handleSearch}
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-        >
-          Search
-        </button>
       </div>
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="text-center text-green-500 animate-pulse italic">
+          Searching…
+        </div>
       ) : (
         <div className="space-y-2">
+          {hasSearched && results.length === 0 && (
+            <div className="text-center italic">No food items found.</div>
+          )}
           {results.map(item => (
             <div
               key={item.name}
