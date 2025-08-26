@@ -184,25 +184,27 @@ namespace NutritionTracker.Api
             // - Seeds an admin user if missing
             using (var scope = app.Services.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
 
                 try
                 {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+
                     Console.WriteLine("🛠️ Applying migrations...");
                     dbContext.Database.Migrate();
                     Console.WriteLine("✅ Migrations applied successfully.");
+
+
+                    //seeds an admin if none is present after migration attempt
+                    AdminSeeder.Seed(scope.ServiceProvider);
+
+                    //seeds some initial food items with nutrition values inside the db for testing if none exist yet from a json inside Data folder
+                    await FoodSeeder.SeedAsync(dbContext);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("⚠️ Migration encountered an issue: " + ex.Message);
                     Console.WriteLine("ℹ️ Continuing startup — database may already exist or be partially initialized.");
                 }
-
-                //seeds an admin if none is present after migration attempt
-                AdminSeeder.Seed(scope.ServiceProvider);
-
-                //seeds some initial food items with nutrition values inside the db for testing if none exist yet from a json inside Data folder
-                await FoodSeeder.SeedAsync(dbContext);
             }
 
 
