@@ -1,5 +1,4 @@
--- Create the database
-PRINT '⚠️ Running init.sql...';
+-- Creates the database if it doesnt exist
 
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'NutritionTrackerDB')
 BEGIN
