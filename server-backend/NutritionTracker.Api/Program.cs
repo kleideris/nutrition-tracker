@@ -12,6 +12,7 @@ using NutritionTracker.Api.Repositories;
 using NutritionTracker.Api.Services;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
 using System.Reflection;
 using System.Text;
 
@@ -19,7 +20,7 @@ namespace NutritionTracker.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             // This initializes a WebApplicationBuilder, which helps you configure services, middleware, and settings for your web application
             var builder = WebApplication.CreateBuilder(args);
@@ -199,7 +200,11 @@ namespace NutritionTracker.Api
 
                 //seeds an admin if none is present after migration attempt
                 AdminSeeder.Seed(scope.ServiceProvider);
+
+                //seeds some initial food items with nutrition values inside the db for testing if none exist yet from a json inside Data folder
+                await FoodSeeder.SeedAsync(dbContext);
             }
+
 
             //In development mode, shows interactive Swagger documentation
             if (app.Environment.IsDevelopment())
