@@ -24,23 +24,23 @@ public static class AdminSeeder
                 };
 
                 db.Users.Add(adminUser);
-                Console.WriteLine("👤 Admin user seeded successfully.");
+                Console.WriteLine("<|> Admin user seeded successfully.");
                 db.SaveChanges();
             }
             else
             {
-                Console.WriteLine("ℹ️ Admin user already exists. Skipping seeding.");
+                Console.WriteLine("<|> Admin user already exists. Skipping seeding.");
             }
         }
         catch (SqlException ex)
         {
-            Console.WriteLine("❌ Could not connect to the database.");
+            Console.WriteLine("<|> Could not connect to the database.");
             Console.WriteLine($"Details: {ex.Message}");
             //TODO: log to a file or monitoring system
         }
         catch (Exception ex)
         {
-            Console.WriteLine("❌ An unexpected error occurred.");
+            Console.WriteLine("<|> An unexpected error occurred.");
             Console.WriteLine($"Details: {ex.Message}");
 
         }

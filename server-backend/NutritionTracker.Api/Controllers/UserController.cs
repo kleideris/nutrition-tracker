@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NutritionTracker.Api.Core.Enums;
 using NutritionTracker.Api.Core.Filters;
-using NutritionTracker.Api.Data;
 using NutritionTracker.Api.DTOs;
 using NutritionTracker.Api.Exceptions;
 using NutritionTracker.Api.Services;
@@ -65,7 +64,7 @@ namespace NutritionTracker.Api.Controllers
         public async Task<ActionResult<UserReadOnlyDto>> GetByUsername([FromQuery] string username)
         {
             if (AppUser?.Username != username && !User.IsInRole("Admin"))
-                return Forbid("You can only access your own profile.");
+                throw new EntityForbiddenException("User", "You can only access your own profile.");
 
             var user = await _applicationService.UserService.GetByUsernameAsync(username) ?? throw new EntityNotFoundException("User", "User: " + username + " NotFound");
             var returnedDto = _mapper.Map<UserReadOnlyDto>(user);
@@ -162,7 +161,7 @@ namespace NutritionTracker.Api.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
         {
             if (AppUser?.Id != id && !User.IsInRole("Admin"))
-                return Forbid("You can only update your own profile.");
+                throw new EntityForbiddenException("User", "You can only update your own profile.");
 
             var user = await _applicationService.UserService.GetByIdAsync(id);
             if (user == null)

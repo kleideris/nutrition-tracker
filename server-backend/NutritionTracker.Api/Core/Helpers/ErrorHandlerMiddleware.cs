@@ -4,7 +4,10 @@ using System.Text.Json;
 
 namespace NutritionTracker.Api.Core.Helpers
 {
-    // You can use this error handler if GlobalExceptionHandler doesnt work.
+    /// <summary>
+    /// This middleware is used to catch authorization failures that the global exception handler would miss..
+    /// </summary>
+    /// <remarks>You can also use this error handler if for some reason the GlobalExceptionHandler doesnt work.</remarks>
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
@@ -13,30 +16,6 @@ namespace NutritionTracker.Api.Core.Helpers
         {
             _next = next;
         }
-
-
-        //public async Task Invoke(HttpContext context)
-        //{
-        //    try
-        //    {
-        //        await _next(context);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Delegates exceptions to the GlobalExceptionHandler
-        //        var handler = context.RequestServices.GetRequiredService<IExceptionHandler>();
-        //        var handled = await handler.TryHandleAsync(context, ex, CancellationToken.None);
-
-        //        if()
-
-        //        if (!handled)
-        //        {
-        //            // Fallback logic if GlobalExceptionHandler doesn't handle it
-        //            context.Response.StatusCode = 500;
-        //            await context.Response.WriteAsync("Unhandled error occurred.");
-        //        }
-        //    }
-        //}
 
         public async Task Invoke(HttpContext context)
         {
@@ -102,6 +81,29 @@ namespace NutritionTracker.Api.Core.Helpers
                 context.Response.Body = originalBodyStream;
             }
         }
+
+        //public async Task Invoke(HttpContext context)
+        //{
+        //    try
+        //    {
+        //        await _next(context);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Delegates exceptions to the GlobalExceptionHandler
+        //        var handler = context.RequestServices.GetRequiredService<IExceptionHandler>();
+        //        var handled = await handler.TryHandleAsync(context, ex, CancellationToken.None);
+
+        //        if()
+
+        //        if (!handled)
+        //        {
+        //            // Fallback logic if GlobalExceptionHandler doesn't handle it
+        //            context.Response.StatusCode = 500;
+        //            await context.Response.WriteAsync("Unhandled error occurred.");
+        //        }
+        //    }
+        //}
 
         //public async Task Invoke(HttpContext context)
         //{

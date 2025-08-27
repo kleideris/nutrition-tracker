@@ -17,8 +17,10 @@ namespace NutritionTracker.Api.Core.Helpers
         {
             //if (exception is AppException appEx)
             //{
-            //    _logger.LogError("Handled exception: {Code} - {Message}", appEx.Code, appEx.Message);
+            //_logger.LogError("Handled exception: {Code} - {Message}", appEx.Code, appEx.Message);
             //}
+
+            _logger.LogError(exception, "An exception occurred while processing the request.");
 
             var response = httpContext.Response;
             response.ContentType = "application/json";
@@ -30,7 +32,8 @@ namespace NutritionTracker.Api.Core.Helpers
                 EntityNotAuthorizedException => (int)HttpStatusCode.Unauthorized,    // 401
                 EntityForbiddenException => (int)HttpStatusCode.Forbidden,           // 403
                 EntityNotFoundException => (int)HttpStatusCode.NotFound,             // 404
-                _ => (int)HttpStatusCode.InternalServerError                        // 500
+                InvalidActionException => (int)HttpStatusCode.Conflict,              // 409
+                _ => (int)HttpStatusCode.InternalServerError                         // 500
             };
 
             // Serialize the error response to an anonymous object

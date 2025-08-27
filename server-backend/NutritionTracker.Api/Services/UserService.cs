@@ -94,7 +94,7 @@ namespace NutritionTracker.Api.Services
             {
                 int adminCount = await _unitOfWork.UserRepository.GetCountByRoleAsync(role);
                 if (adminCount <= 1 && dto.NewRole != UserRole.Admin)
-                    throw new AppException("InvalidUpdate", "Cannot demote the last remaining admin.");
+                    throw new InvalidActionException("Update", "Cannot demote the last remaining admin.");
             }
 
             user.UserRole = dto.NewRole;
@@ -118,7 +118,7 @@ namespace NutritionTracker.Api.Services
             {
                 int adminCount = await _unitOfWork.UserRepository.GetCountByRoleAsync(role);
                 if (adminCount <= 1)
-                    throw new AppException("InvalidDeletion", "Cannot delete the last remaining admin.");
+                    throw new InvalidActionException("Deletion", "Cannot delete the last remaining admin.");
             }
 
             bool deleted = await _unitOfWork.UserRepository.DeleteAsync(id);

@@ -56,10 +56,19 @@ namespace NutritionTracker.Api
 
 
             // Sets up Serilog for structured logging. Reads config from appsettings.json
-            builder.Host.UseSerilog((context, config) =>
-            {
-                config.ReadFrom.Configuration(context.Configuration);
-            });
+            //builder.Host.UseSerilog((context, config) =>
+            //{
+            //    config.ReadFrom.Configuration(context.Configuration);
+            //});
+
+            // Sets up Serilog and makes sure the default microsoft logging is removed
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .CreateLogger();
+            builder.Host.UseSerilog(); // This wires up Serilog
+            builder.Logging.ClearProviders(); // Removes default Microsoft logging
+            builder.Logging.AddSerilog();     // Adds Serilog explicitly
+
 
 
             // This configures JWT-based authentication using bearer tokens
@@ -189,9 +198,9 @@ namespace NutritionTracker.Api
                 {
                 var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
 
-                    Console.WriteLine("🛠️ Applying migrations...");
+                    Console.WriteLine("<|> Applying migrations...");
                     dbContext.Database.Migrate();
-                    Console.WriteLine("✅ Migrations applied successfully.");
+                    Console.WriteLine("<|> Migrations applied successfully.");
 
 
                     //seeds an admin if none is present after migration attempt
@@ -202,8 +211,8 @@ namespace NutritionTracker.Api
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("⚠️ Migration encountered an issue: " + ex.Message);
-                    Console.WriteLine("ℹ️ Continuing startup — database may already exist or be partially initialized.");
+                    Console.WriteLine("<|> Migration encountered an issue: " + ex.Message);
+                    Console.WriteLine("<|> Continuing startup — database may already exist or be partially initialized.");
                 }
             }
 

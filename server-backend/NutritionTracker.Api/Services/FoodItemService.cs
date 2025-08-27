@@ -19,7 +19,7 @@ namespace NutritionTracker.Api.Services
 
 
         /// <summary>
-        /// Adds a new food item to the database.
+        /// Adds a new food item to the database. It also trims the name and makes sure its not whitespace.
         /// </summary>
         /// <param name="dto">The data transfer object containing food item details.</param>
         /// <returns>True if the item was added successfully; otherwise, false.</returns>
@@ -28,6 +28,10 @@ namespace NutritionTracker.Api.Services
         public async Task<bool> AddAsync(FoodItemDto dto)
         {
             dto.Name = dto.Name.Trim();
+
+            if (string.IsNullOrWhiteSpace(dto.Name))
+                throw new InvalidActionException("Name", "Food name cannot be empty or whitespace.");
+
             FoodItem foodItem = _mapper.Map<FoodItem>(dto);
             if (foodItem == null)
             {
@@ -69,7 +73,7 @@ namespace NutritionTracker.Api.Services
             {
                 await _unitOfWork.SaveAsync();
 
-                _logger.LogInformation("Deleted FoodItem: {id}", id);
+                _logger.LogInformation("Deleted FoodItem with id: {id}", id);
                 return true;
             }
             return false;

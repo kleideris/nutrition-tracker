@@ -53,8 +53,9 @@ namespace NutritionTracker.Api.Repositories
             IQueryable<User> query = context.Users;
 
             query = query.Where(predicates ?? (u => true))  // fallback with (u => true), ensures no filters = full data
-                 .Skip(skip)
-                 .Take(pageSize);
+                .OrderBy(u => u.Id)
+                .Skip(skip)
+                .Take(pageSize);
 
             query = query.Skip(skip).Take(pageSize);
 

@@ -9,7 +9,6 @@ namespace NutritionTracker.Api.DTOs
         public int UserId { get; set; }
 
         [Required(ErrorMessage = "Timestamp is required.")]
-        [EnumDataType(typeof(DateTime), ErrorMessage = "Invalid Timestamp type.")]
         public DateTime Timestamp { get; set; }
 
         [Required]
