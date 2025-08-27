@@ -37,7 +37,8 @@
 - Swagger auto-generated docs
 - JWT-based authentication
 - Serilog logging
-- admin and fooditem seeding at initial startup
+- admin and fooditem seeding at initial startup  (Security Note: these are only for development and shouldnt be used in a production environment!)
+
 
 <br>
 
@@ -60,7 +61,7 @@ Make sure Docker Desktop is installed on your machine and is running then follow
    cd nutrition-tracker
    ```
 
-2. create a .env in the root and populate it with the variables needed for the frontend and backend (follow the .env.exaple template)
+2. create a `.env` in the root and populate it with the variables needed for the frontend and backend (follow the `.env.example` template)
    ```dotenv
    SA_PASSWORD=<your db sa password>
    DB_CONNECTION=<your db connection string>
@@ -79,7 +80,7 @@ Make sure Docker Desktop is installed on your machine and is running then follow
 
 All done, the frontend runs at http://localhost:3000 and the backend API is accessed at http://localhost:5000/api
 
-At startup, the db is automatically created if it doesnt exist, an admin is seeded if no admin users exist to give access to admin features and some test food items are automatically seeded if none exist.
+At startup, the db is automatically created if it doesn't exist, an admin is seeded if no admin users exist to give access to admin features and some test food items are automatically seeded if none exist.
 
 #### Admin credential:
 - **Username: admin**
@@ -191,11 +192,11 @@ You can manually create the NutritionTrackerDB or run the provided SQL script:
 <br>
 
 ## Tech Stack Used
-- **Frontend** - React (with Vite), React Router DOM <br>
-- **Backend** - C#, ASP.NET Core Web API (.NET 8) <br>
-- **Database** - SQL Server, Entity Framework Core <br>
-- **Deployment** - Docker + `docker-compose` <br>
-- **Tooling** - Studio, VS Code, SSMS
+- **Frontend** - React (with Vite), React Router DOM  
+- **Backend** - C#, ASP.NET Core Web API (.NET 8)  
+- **Database** - SQL Server, Entity Framework Core  
+- **Deployment** - Docker + `docker-compose`  
+- **Tooling** - Studio, VS Code, SSMS  
 
 <br>
 
@@ -206,26 +207,20 @@ You can manually create the NutritionTrackerDB or run the provided SQL script:
 - An Admin and some food data are seeded in the database when first running the project.
 - Only an Admin has access to FoodItem creation, deletion and is able to change the roles of other users to Admin.
 - There are many scripts that help with tedious actions such as:
-
    - inside _docker (mostly used by docker but can be used manually too)
       - generate-env.sh - generate frontend and backend .envs (used for individual manual startup of frontend or backend) from root .env
       - entrypoint.sh - ensures the db is up then runs init.sql
       - init.sql - creates the db in it doesnt exist.
-
    - inside root:
       - start.sh - runs generate-envs.sh then runs docker-compose
-
    - inside package.json are scripts that can be used to run the project from the frontend folder once build using npm commands:
-      - npm run start - deploys the frontend and backend concurently
+      - npm run start - deploys the frontend and backend concurrently
       - npm run start:frontend - deploys only the frontend
       - npm run start:backend - deploys only the backend
 
 <br>
 
 ## Troubleshooting
-- Port conflicts: Ensure ports 3000 and 5000 are free.
-- Missing .env: Double-check .env files exist in all required folders.
-- JWT issues: Regenerate your secret using the Python command `python -c import secrets; print(secrets.token_urlsafe(64))`.
 
 Here are common issues and how to resolve them:
 
@@ -239,10 +234,9 @@ Here are common issues and how to resolve them:
   If your JWT tokens aren’t working, regenerate a secure secret using:
   ```bash
   python -c "import secrets; print(secrets.token_urlsafe(64))"
+  ```
   
 <br>
 
 ## License
 MIT License. See the LICENSE file for details.
-
----
