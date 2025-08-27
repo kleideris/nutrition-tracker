@@ -10,11 +10,5 @@ namespace NutritionTracker.Api.DTOs
 
         [JsonProperty("token_type")]
         public string? TokenType { get; set; } = "Bearer";
-
-        //[JsonPropertyName("firstname")]
-        //public string? Firstname { get; set; }
-
-        //[JsonPropertyName("lastname")]
-        //public string? Lastname { get; set; }
     }
 }

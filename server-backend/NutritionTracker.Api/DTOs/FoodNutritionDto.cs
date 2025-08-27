@@ -2,7 +2,7 @@
 {
     public class FoodNutritionDto
     {
-        public string FoodName { get; set; }
+        public string? FoodName { get; set; }
         public double QuantityInGrams { get; set; }
 
         public float Calories { get; set; }
