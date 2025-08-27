@@ -44,15 +44,24 @@ namespace NutritionTracker.Api.Controllers
 
 
         /// <summary>
-        /// Retrieves a user by their username.
+        /// Retrieves a user's profile by their username.
         /// </summary>
-        /// <param name="username">The username of the user to retrieve. This value cannot be null or empty.</param>
-        /// <returns>An <see cref="ActionResult{T}"/> containing a <see cref="UserReadOnlyDto"/> representing the user with the
-        /// specified username. If the user is not found, an exception is thrown.</returns>
-        /// <exception cref="EntityNotFoundException">Thrown if no user with the specified <paramref name="username"/> exists.</exception>
+        /// <param name="username">
+        /// The username of the user to retrieve. This value must not be null or empty.
+        /// </param>
+        /// <returns>
+        /// An <see cref="ActionResult{UserReadOnlyDto}"/> containing the user's profile data.
+        /// Returns <c>403 Forbidden</c> if the authenticated user attempts to access another user's profile without admin privileges.
+        /// </returns>
+        /// <exception cref="EntityNotFoundException">
+        /// Thrown when no user with the specified <paramref name="username"/> exists.
+        /// </exception>
         /// 
         [HttpGet("username")]
         [Authorize]
+        //[ProducesResponseType(typeof(UserReadOnlyDto), StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        //[ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<UserReadOnlyDto>> GetByUsername([FromQuery] string username)
         {
             if (AppUser?.Username != username && !User.IsInRole("Admin"))
