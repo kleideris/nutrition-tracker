@@ -37,17 +37,18 @@
 - Swagger auto-generated docs
 - JWT-based authentication
 - Serilog logging
+- admin and fooditem seeding at initial startup
 
----
+<br>
 
 ## Prerequisites
 - [.NET SDK](https://dotnet.microsoft.com/download)
 - [Node.js & npm](https://nodejs.org/)
 - [Docker](https://www.docker.com/products/docker-desktop/) (for Docker method)
 
----
+<br>
 
-# How To Run
+## How To Run
 
 ### Run with Docker:
 
@@ -76,7 +77,13 @@ Make sure Docker Desktop is installed on your machine and is running then follow
    docker-compose up --build
    ```
 
-4. **All done, the frontend runs at http://localhost:3000 and the backend API is accessed at http://localhost:5000/api**
+All done, the frontend runs at http://localhost:3000 and the backend API is accessed at http://localhost:5000/api
+
+At startup, the db is automatically created if it doesnt exist, an admin is seeded if no admin users exist to give access to admin features and some test food items are automatically seeded if none exist.
+
+#### Admin credential:
+- **Username: admin**
+- **Password: Admin.94**
 
 <br>
 
@@ -122,7 +129,7 @@ You can manually create the NutritionTrackerDB or run the provided SQL script:
 - npm run start:frontend
 - npm run start:backend
 
----
+<br>
 
 ### Environment Variables
 
@@ -139,7 +146,7 @@ You can manually create the NutritionTrackerDB or run the provided SQL script:
 - APP_UID - User ID used inside the container to avoid permission issues (default: 1000)
 - ASPNETCORE_URLS - URL binding for ASP.NET Core app inside the container (default: http://0.0.0.0:8080)
 
----
+<br>>
 
 ## API Endpoints
 
@@ -147,10 +154,10 @@ You can manually create the NutritionTrackerDB or run the provided SQL script:
 - `POST /api/auth/login/access-token` - Authenticates user credentials and returns a JWT token
 
 ### Users
-- `GET /api/users` - Retrieves a paginated list of users that match the specified filter criteria
-- `GET /api/users/{id}` - Retrieves a user by their id
-- `GET /api/users/username?username=..` - Retrieves a user by their username
-- `GET /api/users/admin-count` - Retrieves the total number of Admins
+- `GET /api/users` - Retrieves a paginated list of users that match the specified filter criteria  (Admin only)
+- `GET /api/users/{id}` - Retrieves a user by their id (only admin can get any user)
+- `GET /api/users/username?username=..` - Retrieves a user by their username (only admin can get any user)
+- `GET /api/users/admin-count` - Retrieves the total number of Admins (Admin Only)
 - `POST /api/users` - Registers a new user
 - `PATCH /api/users/{id}` - Updates a user (only Admin can update other users)
 - `PATCH /api/users/{id}/role` - Updates a user's role (Admin Only)
@@ -168,20 +175,20 @@ You can manually create the NutritionTrackerDB or run the provided SQL script:
 - `POST /api/food-items` - Adds a new food item (Admin only)
 - `DELETE /api/food-items/{id}` - Deletes a food item by its Id (Admin only)
 
----
+<br>
 
 ## Authentication
 - User login & registration with bcrypt password hashing
 - JWT-based token system for protected routes
 
----
+<br>
 
 ## Authentication Flow
 - Register: POST /api/users
 - Login: POST /api/auth/login/access-token
 - Protected Routes: Require Authorization: Bearer <token> header
 
----
+<br>
 
 ## Tech Stack Used
 - **Frontend** - React (with Vite), React Router DOM <br>
@@ -190,7 +197,7 @@ You can manually create the NutritionTrackerDB or run the provided SQL script:
 - **Deployment** - Docker + `docker-compose` <br>
 - **Tooling** - Studio, VS Code, SSMS
 
----
+<br>
 
 ## Developer Notes
 - All controllers inherit from BaseController, which provides access to the authenticated ApplicationUser via claims.
@@ -198,8 +205,22 @@ You can manually create the NutritionTrackerDB or run the provided SQL script:
 - Role-based authorization is enforced using [Authorize(Roles = "Admin")].
 - An Admin and some food data are seeded in the database when first running the project.
 - Only an Admin has access to FoodItem creation, deletion and is able to change the roles of other users to Admin.
+- There are many scripts that help with tedious actions such as:
 
----
+   - inside _docker (mostly used by docker but can be used manually too)
+      - generate-env.sh - generate frontend and backend .envs (used for individual manual startup of frontend or backend) from root .env
+      - entrypoint.sh - ensures the db is up then runs init.sql
+      - init.sql - creates the db in it doesnt exist.
+
+   - inside root:
+      - start.sh - runs generate-envs.sh then runs docker-compose
+
+   - inside package.json are scripts that can be used to run the project from the frontend folder once build using npm commands:
+      - npm run start - deploys the frontend and backend concurently
+      - npm run start:frontend - deploys only the frontend
+      - npm run start:backend - deploys only the backend
+
+<br>
 
 ## Troubleshooting
 - Port conflicts: Ensure ports 3000 and 5000 are free.
@@ -219,7 +240,7 @@ Here are common issues and how to resolve them:
   ```bash
   python -c "import secrets; print(secrets.token_urlsafe(64))"
   
----
+<br>
 
 ## License
 MIT License. See the LICENSE file for details.

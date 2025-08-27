@@ -18,7 +18,6 @@ Generated_Code/
 # Local .NET Secrets
 secrets.json
 .env
-.env.example
 
 # Entity Framework
 # Migrations/
