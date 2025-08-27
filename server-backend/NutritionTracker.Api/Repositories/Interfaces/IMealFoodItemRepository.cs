@@ -8,7 +8,6 @@ namespace NutritionTracker.Api.Repositories.Interfaces
     /// </summary>
     public interface IMealFoodItemRepository
     {
-
         /// <summary>
         /// Retrieves a specific MealFoodItem entry based on the combination of meal and food item IDs.
         /// </summary>

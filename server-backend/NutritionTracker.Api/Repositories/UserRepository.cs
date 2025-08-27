@@ -10,23 +10,22 @@ namespace NutritionTracker.Api.Repositories
     /// <summary>
     /// Repository for performing data operations related to <see cref="User"/> entities.
     /// </summary>
-    /// 
     public class UserRepository(AppDBContext context) : BaseRepository<User>(context) , IUserRepository
     {
-
+        #region docs
         /// <summary>
-        /// Authenticates a user by verifying their username/email and password.
+        /// Authenticates a user by verifying their username and password.
         /// </summary>
-        /// <param name="usernameOrEmail">The username or email of the user.</param>
+        /// <param name="username">The username or email of the user.</param>
         /// <param name="password">The plaintext password to validate.</param>
         /// <returns>
         /// A <see cref="User"/> object if authentication is successful; otherwise, <c>null</c>.
         /// </returns>
-        /// 
-        public async Task<User?> AuthenticateAsync(string usernameOrEmail, string password)
+        #endregion
+        public async Task<User?> AuthenticateAsync(string username, string password)
         {
             var user = await context.Users
-                .FirstOrDefaultAsync(u => u.Username == usernameOrEmail || u.Email == usernameOrEmail);
+                .FirstOrDefaultAsync(u => u.Username == username || u.Email == username);
 
             if (user == null || !EncryptionUtil.IsValidPassword(password, user.PasswordHash))
             {
@@ -37,6 +36,7 @@ namespace NutritionTracker.Api.Repositories
         }
 
 
+        #region docs
         /// <summary>
         /// Retrieves a paginated list of users filtered by the specified predicate.
         /// </summary>
@@ -44,7 +44,7 @@ namespace NutritionTracker.Api.Repositories
         /// <param name="pageSize">The number of users per page.</param>
         /// <param name="predicates">An expression used to filter users.</param>
         /// <returns>A list of <see cref="User"/> objects matching the filter criteria.</returns>
-        ///
+        #endregion
         public async Task<List<User>> GetAllFilteredPaginatedAsync(int pageNumber, int pageSize,
             Expression<Func<User, bool>> predicates)  // Uses Expression<Func<User, bool>> to ensure filtering is performed in SQL, avoiding in-memory filtering.
         {
@@ -63,6 +63,7 @@ namespace NutritionTracker.Api.Repositories
         }
 
 
+        #region docs
         /// <summary>
         /// Updates an existing user with new data.
         /// </summary>
@@ -71,7 +72,7 @@ namespace NutritionTracker.Api.Repositories
         /// <returns>
         /// The original <see cref="User"/> object if found; otherwise, <c>null</c>.
         /// </returns>
-        /// 
+        #endregion
         public async Task<User?> UpdateAsync(int id, User user)
         {
             var existingUser = await context.Users.FindAsync(id);
@@ -87,29 +88,33 @@ namespace NutritionTracker.Api.Repositories
         }
 
 
+        #region docs
         /// <summary>
         /// Retrieves a user by their username.
         /// </summary>
         /// <param name="username">The username to search for.</param>
         /// <returns>A <see cref="User"/> object if found; otherwise, <c>null</c>.</returns>
+        #endregion
         public async Task<User?> GetByUsernameAsync(string username) => await context.Users.FirstOrDefaultAsync(u => u.Username == username);
 
 
+        #region docs
         /// <summary>
         /// Checks whether a user with the specified email already exists.
         /// </summary>
         /// <param name="email">The email address to check.</param>
         /// <returns><c>true</c> if the email exists; otherwise, <c>false</c>.</returns>
-        /// 
+        #endregion
         public async Task<bool> EmailExistsAsync(string? email) => await context.Users.AnyAsync(u => u.Email == email);
 
 
+        #region docs
         /// <summary>
         /// Asynchronously counts the number of users with the specified role.
         /// </summary>
         /// <param name="role">The <see cref="UserRole"/> to filter users by.</param>
         /// <returns>An <see cref="int"/> representing the total number of users who match the given role.</returns>
-        /// 
+        #endregion
         public async Task<int> GetCountByRoleAsync(UserRole role) => await context.Users.CountAsync(u => u.UserRole == role);
     }
 }

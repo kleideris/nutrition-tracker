@@ -2,6 +2,9 @@
 
 namespace NutritionTracker.Api.Repositories.Interfaces
 {
+    /// <summary>
+    /// Work in progress, not used by anything so far..
+    /// </summary>
     public interface IGoalsRepository
     {
         Task<Goal?> GetActiveGoalAsync(int userId);
