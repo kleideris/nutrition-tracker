@@ -188,38 +188,36 @@ namespace NutritionTracker.Api
             app.UseExceptionHandler(options => { } );
 
 
-
-            // Startup routine to prepare the database in Docker environments: - Applies migrations to initialize or update schema - Continues gracefully if DB already exists
-            // - Seeds an admin user if missing
-            using (var scope = app.Services.CreateScope())
-            {
-
-                try
-                {
-                var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
-
-                    Console.WriteLine("<|> Applying migrations...");
-                    dbContext.Database.Migrate();
-                    Console.WriteLine("<|> Migrations applied successfully.");
-
-
-                    //seeds an admin if none is present after migration attempt
-                    AdminSeeder.Seed(scope.ServiceProvider);
-
-                    //seeds some initial food items with nutrition values inside the db for testing if none exist yet from a json inside Data folder
-                    await FoodSeeder.SeedAsync(dbContext);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("<|> Migration encountered an issue: " + ex.Message);
-                    Console.WriteLine("<|> Continuing startup — database may already exist or be partially initialized.");
-                }
-            }
-
-
-            //In development mode, shows interactive Swagger documentation
+            // In development mode, - shows interactive Swagger documentation, - applies migrations, - seeds admin and food items.
             if (app.Environment.IsDevelopment())
             {
+                // Startup routine to prepare the database in Docker environments: - Applies migrations to initialize or update schema - Continues gracefully if DB already exists
+                // - Seeds an admin user if missing
+                using (var scope = app.Services.CreateScope())
+                {
+
+                    try
+                    {
+                        var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+
+                        Console.WriteLine("<|> Applying migrations...");
+                        dbContext.Database.Migrate();
+                        Console.WriteLine("<|> Migrations applied successfully.");
+
+
+                        //seeds an admin if none is present after migration attempt
+                        AdminSeeder.Seed(scope.ServiceProvider);
+
+                        //seeds some initial food items with nutrition values inside the db for testing if none exist yet from a json inside Data folder
+                        await FoodSeeder.SeedAsync(dbContext);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("<|> Migration encountered an issue: " + ex.Message);
+                        Console.WriteLine("<|> Continuing startup — database may already exist or be partially initialized.");
+                    }
+                }
+
                 app.UseSwagger();
                 app.UseSwaggerUI(/*c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "NutritionTracker API V1"); }*/);
             }
