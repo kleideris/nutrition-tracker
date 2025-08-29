@@ -1,4 +1,3 @@
-// src/api/index.ts
 import { fetchWithAuth } from "./fetchWithAuth";
 
 export const api = {

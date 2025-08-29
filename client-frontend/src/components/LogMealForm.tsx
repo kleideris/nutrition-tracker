@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { type FoodItemDto } from "@/dto/FoodItemDto";
+import { type FoodItemDto } from "@/types/foodItemDto";
 import { toast } from "sonner";
 import { AuthContext } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
@@ -94,7 +94,7 @@ export const LogMealForm = ({ mode, initialMeal, onSuccess }: MealFormProps) => 
 
   const handleSelect = (item: FoodItemDto) => {
     if (selectedItems.find((i) => i.id === item.id)) return;
-    setSelectedItems((prev) => [...prev, { ...item, quantity: 1, unit: "g" }]);
+    setSelectedItems((prev) => [...prev, { ...item, quantity: 100, unit: "g" }]);
     setQuery("");
     setResults([]);
   };

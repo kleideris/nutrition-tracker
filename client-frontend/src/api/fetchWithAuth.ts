@@ -15,6 +15,7 @@ export async function fetchWithAuth(
   };
 
   const url = `${BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+
   // console.log("Auth token from cookie:", token);
 
   return fetch(url, {

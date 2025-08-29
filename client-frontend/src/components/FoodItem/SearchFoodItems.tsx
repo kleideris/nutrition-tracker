@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { type FoodItemDto } from "@/dto/FoodItemDto";
 import { toast } from "sonner";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
 import { Icons } from "../icons";
+import type { FoodItemDto } from "@/types/foodItemDto";
 
 export const SearchFoodItems: React.FC = () => {
   const [query, setQuery] = useState("");

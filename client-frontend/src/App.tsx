@@ -31,7 +31,7 @@ const App = () => {
 
                 <Route path="/dashboard" element={<ProtectedRoute />}>
                   <Route element={<DashboardPage />}>
-                  <Route index element={<DashboardWelcome />} /> {/* 👈 Add this */}
+                  <Route index element={<DashboardWelcome />} />
                     <Route path="log-meal" element={<LogMealPage />} />
                     <Route path="my-meals" element={<MyMealsPage />} />
                     <Route path="food-items" element={<FoodItemsPage />} />

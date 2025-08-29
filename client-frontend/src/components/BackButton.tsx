@@ -1,4 +1,3 @@
-// src/components/ui/BackButton.tsx
 import { useNavigate } from "react-router-dom";
 
 export default function BackButton({ label = "Back" }: { label?: string }) {

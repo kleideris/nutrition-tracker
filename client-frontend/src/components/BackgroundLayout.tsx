@@ -12,7 +12,7 @@ const BackgroundLayout = ({ children }: { children: React.ReactNode }) => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
         style={{ 
           backgroundImage: `url(${bgImage})`,
-          backgroundAttachment: "fixed"  // 👈 Keeps image fixed
+          backgroundAttachment: "fixed"  // Keeps image fixed
         }}
       />
 

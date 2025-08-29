@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { type FoodItemDto } from "@/dto/FoodItemDto";
+import { type FoodItemDto } from "@/types/foodItemDto";
 import { toast } from "sonner";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
 import { Icons } from "../icons";
+import type { RemoveFootItemProps } from "@/types/foodItemForm";
 
-type Props = {
-  apiUrl: string;
-};
-
-const RemoveFoodItem: React.FC<Props> = ({ apiUrl }) => {
+const RemoveFoodItem: React.FC<RemoveFootItemProps> = ({ apiUrl }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<FoodItemDto[]>([]);
   const [loading, setLoading] = useState(false);

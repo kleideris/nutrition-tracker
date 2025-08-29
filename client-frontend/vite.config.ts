@@ -8,8 +8,6 @@ import path from 'path';
 // Load environment variables from .env file
 dotenv.config();
 
-// console.log("Using port:", process.env.VITE_PORT);
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [

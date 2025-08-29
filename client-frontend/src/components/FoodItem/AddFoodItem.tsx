@@ -1,12 +1,9 @@
 import React, { useState } from "react";
-import { type FoodItemDto } from "../../dto/FoodItemDto";
+import { type FoodItemDto } from "../../types/foodItemDto";
 import FoodItemForm from "./FoodItemForm";
+import type { AddFoodItemProps } from "@/types/foodItemForm";
 
-type Props = {
-  onAdd: (item: FoodItemDto) => void;
-};
-
-export default function AddFoodItem({ onAdd }: Props) {
+export default function AddFoodItem({ onAdd }: AddFoodItemProps) {
   const [formData, setFormData] = useState<FoodItemDto>({
     name: "",
     nutritionData: {

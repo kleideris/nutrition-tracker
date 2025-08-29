@@ -1,13 +1,6 @@
 import { createContext } from "react";
 import type { LoginFields } from "../api/login";
-import type { User } from "./AuthProvider";
-
-// type User = {
-//   id: number;
-//   usename: string;
-//   email: string;
-//   userRole: string;
-// }
+import type { User } from "@/types/auth";
 
 type AuthContextProps = {
   isAuthenticated: boolean;

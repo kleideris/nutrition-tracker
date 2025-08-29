@@ -6,17 +6,8 @@ import DashboardContentWrapper from "@/components/DashboardContentWrapper";
 import { toast } from "sonner";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
 import { useAuth } from "@/hooks/useAuth";
+import type { FoodItemType } from "@/types/fooditems";
 
-type FoodItemType = {
-  name: string;
-  nutritionData: {
-    calories: number;
-    protein: number;
-    carbohydrates: number;
-    fats: number;
-    servingSizeGrams: number;
-  };
-};
 
 export default function FoodItemPage() {
   const [view, setView] = useState<"search" | "add" | "remove">("search");

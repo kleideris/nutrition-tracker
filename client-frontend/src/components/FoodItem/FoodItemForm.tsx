@@ -1,13 +1,6 @@
-import React from "react";
-import { type FoodItemDto } from "../../dto/FoodItemDto";
+import type { FoodItemFormProps } from "@/types/foodItemForm";
 
-type Props = {
-  formData: FoodItemDto;
-  setFormData: React.Dispatch<React.SetStateAction<FoodItemDto>>;
-  onSubmit: (e: React.FormEvent) => void;
-};
-
-export default function FoodItemForm({ formData, setFormData, onSubmit }: Props) {
+export default function FoodItemForm({ formData, setFormData, onSubmit }: FoodItemFormProps) {
   return (
     <form
       onSubmit={onSubmit}
