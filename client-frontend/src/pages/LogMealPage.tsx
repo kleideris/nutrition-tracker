@@ -1,4 +1,4 @@
-import { LogMealForm } from "@/components/LogMealForm";
+import { LogMealForm } from "@/components/Meal/LogMealForm";
 import DashboardContentWrapper from "@/components/DashboardContentWrapper";
 
 export default function UserProfilePage() {

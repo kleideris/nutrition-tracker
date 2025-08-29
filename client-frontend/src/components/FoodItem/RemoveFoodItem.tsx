@@ -92,7 +92,7 @@ const RemoveFoodItem: React.FC<RemoveFootItemProps> = ({ apiUrl }) => {
       </div>
 
       {loading ? (
-        <div className="text-center text-green-500 animate-pulse italic">
+        <div className="text-center animate-pulse italic">
           Searching…
         </div>
       ) : (

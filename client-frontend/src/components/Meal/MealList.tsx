@@ -3,7 +3,7 @@ import { AuthContext } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/api/fetchWithAuth";
 import { toast } from "sonner";
 import { LogMealForm } from "./LogMealForm";
-import { Icons } from "./icons";
+import { Icons } from "../icons";
 
 interface Meal {
   id: number;
